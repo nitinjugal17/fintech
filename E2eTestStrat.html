@@ -82,10 +82,10 @@
             color: #0f172a;
         }
         .node.level-1 { border-color: #3b82f6; }
-        .node.level-2 { border-color: #10b981; margin-left: 2rem; }
-        .node.level-3 { border-color: #f97316; margin-left: 4rem; }
-        .node.level-4 { border-color: #8b5cf6; margin-left: 6rem; }
-        .node.level-5 { border-color: #ec4899; margin-left: 8rem; }
+        .node.level-2 { border-color: #10b981; margin-left: 1.5rem; }
+        .node.level-3 { border-color: #f97316; margin-left: 3rem; }
+        .node.level-4 { border-color: #8b5cf6; margin-left: 4.5rem; }
+        .node.level-5 { border-color: #ec4899; margin-left: 6rem; }
 
         .button-group {
             margin-bottom: 1.5rem;
@@ -127,207 +127,316 @@
 <body class="bg-gray-50">
 
     <div class="mindmap-container">
-        <h1 class="text-4xl font-bold text-slate-800 mb-2 text-center">E2E Testing Strategy Mind Map</h1>
-        <p class="text-slate-600 mb-6 text-center max-w-3xl">A detailed, interactive guide to the testing strategy for the Health Underwriting AI Application. Click nodes to expand.</p>
+        <h1 class="text-4xl font-bold text-slate-800 mb-2 text-center">QA Strategy for a DDD & Event-Sourced Underwriting Platform</h1>
+        <p class="text-slate-600 mb-6 text-center max-w-3xl">An advanced, interactive guide to testing a Health Underwriting application built on modern architectural patterns.</p>
         
         <div class="button-group">
             <button id="expand-all">Expand All</button>
             <button id="collapse-all" class="secondary">Collapse All</button>
         </div>
 
-        <div id="mindmap-root" class="w-full max-w-6xl">
-            <!-- Node definitions will be dynamically inserted here by JavaScript -->
+        <div id="mindmap-root" class="w-full max-w-7xl">
+            <!-- Mind Map will be generated here -->
         </div>
     </div>
 
     <script>
         const mindmapData = {
-            title: '1. Central Theme: End-to-End Quality Assurance',
+            title: '1. Central Theme: Validating a Resilient, Domain-Driven Architecture',
             level: 1,
             icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
             content: `<ul>
-                <li><strong>Goal:</strong> To validate that the Health Underwriting platform is robust, scalable, secure, and functions according to the Business Requirements Document (BRD).</li>
-                <li><strong>Frameworks & Tools:</strong>
-                    <ul>
-                        <li><strong>Test Orchestration:</strong> Robot Framework</li>
-                        <li><strong>Core Logic:</strong> Python</li>
-                        <li><strong>UI Automation:</strong> Selenium / Playwright</li>
-                        <li><strong>Performance:</strong> Locust</li>
-                        <li><strong>API Testing:</strong> Requests Library</li>
-                        <li><strong>Contract Testing:</strong> Pact</li>
-                    </ul>
-                </li>
+                <li><strong>Goal:</strong> To ensure the platform is robust, scalable, and correctly implements business logic by testing its domain model, command/query separation, and event-sourced nature directly.</li>
+                <li><strong>Architectural Pillars:</strong> Domain-Driven Design (DDD), CQRS, Event Sourcing, Workflow Orchestration.</li>
             </ul>`,
             children: [
                 {
-                    title: '2. Scopes of Testing (BRD-Driven Scenarios)',
+                    title: '2. Domain-Driven Design (DDD) Testing Strategy',
                     level: 2,
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>`,
+                    content: '<strong>Principle:</strong> Testing is organized around business capabilities (Bounded Contexts), not technical layers.',
+                    children: [
+                        { title: 'Bounded Context: Proposal Ingestion & Validation', level: 3, content: `<ul>
+                            <li><strong>Aggregate Testing:</strong> Validate the 'Proposal' aggregate invariants. E.g., a proposal cannot be submitted if the applicant's age is outside the serviceable range.</li>
+                            <li><strong>Domain Event Testing:</strong> Ensure a successful submission publishes a 'ProposalSubmitted' event with the correct data schema.</li>
+                        </ul>`},
+                        { title: 'Bounded Context: Risk & Triage Assessment', level: 3, content: `<ul>
+                            <li><strong>Aggregate Testing:</strong> Validate the 'Case' aggregate's risk calculation logic. Test that the 'CompositeRiskScore' is calculated correctly based on inputs.</li>
+                            <li><strong>Domain Event Testing:</strong> Verify that after calculation, a 'RiskAssessmentCompleted' event is published.</li>
+                        </ul>`},
+                        { title: 'Bounded Context: Underwriting Adjudication', level: 3, content: `<ul>
+                            <li><strong>Aggregate Testing:</strong> Test the 'UnderwritingCase' aggregate's state transitions. E.g., a case cannot move to 'Approved' state if the 'MERReport' is missing.</li>
+                            <li><strong>Domain Event Testing:</strong> Verify that composing a counter-offer publishes a 'CounterOfferComposed' event.</li>
+                        </ul>`},
+                         { title: 'Bounded Context: Medical Assessment', level: 3, content: `<ul>
+                            <li><strong>Aggregate Testing:</strong> Validate the 'MedicalCase' aggregate. Test that a lab can only be selected from the serviceable list.</li>
+                             <li><strong>Domain Event Testing:</strong> Ensure scheduling a Tele-MER publishes a 'TeleMERScheduled' event.</li>
+                        </ul>`},
+                        { title: 'Bounded Context: Policy Issuance', level: 3, content: `<ul>
+                            <li><strong>Aggregate Testing:</strong> Validate the 'Policy' aggregate's creation logic. A policy cannot be issued without final customer consent.</li>
+                             <li><strong>Domain Event Testing:</strong> Verify a successful issuance publishes a 'PolicyIssued' event.</li>
+                        </ul>`},
+                        { title: 'Bounded Context: Configuration Management', level: 3, content: `<ul>
+                            <li><strong>Aggregate Testing:</strong> Test the 'BusinessRuleSet' aggregate. Validate that a new rule version can be created but an old one cannot be deleted.</li>
+                             <li><strong>Domain Event Testing:</strong> Verify that changing a rule publishes a 'BusinessRuleUpdated' event.</li>
+                        </ul>`}
+                    ]
+                },
+                {
+                    title: '3. CQRS & Event Sourcing Testing Strategy',
+                    level: 2,
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.092 1.21-.138 2.43-.138 3.662v.114M19.5 12h-15m15 0v.114c0 1.232-.046-2.453-.138-3.662a4.006 4.006 0 01-3.7 3.7 48.678 48.678 0 01-7.324 0 4.006 4.006 0 01-3.7-3.7c-.092-1.21-.138-2.43-.138-3.662v-.114" /></svg>`,
+                    content: '<strong>Principle:</strong> Test the write side (Commands) and read side (Queries) independently.',
+                    children: [
+                        { title: 'Command Side Testing', level: 3, content: `<ul>
+                            <li><strong>Command Handler Validation:</strong> Test success and failure scenarios for each command. A failed command must NOT produce any events.</li>
+                            <li><strong>Event Store Verification:</strong> On success, query the event store to verify the correct event(s) have been written.</li>
+                            <li><strong>Immutability Testing:</strong> Write tests that attempt to alter a previously recorded event and assert that the operation fails.</li>
+                        </ul>`},
+                        { title: 'Query Side (Read Model) Testing', level: 3, content: `<ul>
+                            <li><strong>Projection/Denormalizer Testing:</strong> Publish a domain event and assert that the relevant read model has been updated correctly.</li>
+                            <li><strong>Event Replay Testing:</strong> Delete a read model, replay all events, and verify the read model is rebuilt to the exact same state.</li>
+                        </ul>`}
+                    ]
+                },
+                {
+                    title: '4. Workflow Orchestration (Saga) Testing',
+                    level: 2,
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg>`,
+                    content: '<strong>Principle:</strong> Test the end-to-end business process flow, including failures and compensating actions.',
+                    children: [
+                        { title: 'Happy Path E2E Testing', level: 3, content: `<ul>
+                            <li>Initiate a process and verify the Saga orchestrator correctly moves through each step by reacting to expected domain events.</li>
+                        </ul>`},
+                        { title: 'Compensation Logic Testing', level: 3, content: `<ul>
+                            <li>Simulate a failure at a critical step and verify the Saga executes the corresponding compensating action.</li>
+                        </ul>`},
+                        { title: 'Timeout and SLA Testing', level: 3, content: `<ul>
+                            <li>Verify the orchestrator correctly handles timeouts if an expected event is not received within the configured SLA.</li>
+                        </ul>`}
+                    ]
+                },
+                {
+                    title: '5. Data Engineering Stack Testing',
+                    level: 2,
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" /></svg>`,
+                    content: '<strong>Principle:</strong> Validate the integrity, accuracy, and performance of the analytics data pipeline.',
+                     children: [
+                        { title: 'Data Ingestion (ETL/ELT) Testing', level: 3, content: `<ul>
+                            <li><strong>Source-to-Raw Validation:</strong> Generate domain events and verify the raw data lands in the data lake with 100% fidelity.</li>
+                        </ul>`},
+                        { title: 'Data Transformation & Quality Testing', level: 3, content: `<ul>
+                            <li><strong>Transformation Logic:</strong> Test the jobs that create analytical tables.</li>
+                             <li><strong>Data Quality Gates:</strong> Implement automated checks for nulls, anomalies, and data volume.</li>
+                        </ul>`},
+                        { title: 'Analytics & Dashboard Testing', level: 3, content: `<ul>
+                             <li><strong>Metric Accuracy:</strong> Create controlled test cases and assert that aggregated metrics are correct.</li>
+                             <li><strong>Dashboard UI Testing:</strong> Ensure all charts load correctly and filters function as expected.</li>
+                        </ul>`}
+                    ]
+                },
+                 {
+                    title: '6. Core QA Strategy, Principles & Personas',
+                    level: 1,
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6M9 11.25h6M9 15.75h6" /></svg>`,
+                    content: 'The foundational elements that guide the entire QA process.',
                     children: [
                         {
-                            title: '2.1. Functional Testing (Validating *What* it Does)',
-                            level: 3,
-                             icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>`,
-                            content: `<p><strong>Objective:</strong> To verify that every business function described in the BRD works as expected from end-to-end.</p>`,
+                            title: 'Core Strategy: Dynamic & BRD-Driven Test Automation',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m0 0v-8.25m0 8.25h3.75m-3.75 0H5.25m11.25 0v-8.25m0 8.25h3.75m-3.75 0h-3.75m-3.75 0H1.5m16.5 0h3.75m-3.75 0h-3.75M9 15.75l3-3m0 0l3 3m-3-3v-6m-1.5 6l-3 3m3-3l3-3" /></svg>`,
                             children: [
-                                { title: 'API & Process Flow Testing', level: 4, 
-                                content: `<ul>
-                                    <li><strong>Proposal Ingestion:</strong> Verify successful API submission from all channels.</li>
-                                    <li><strong>Pre-Admissibility Checks:</strong> Test API responses for invalid age, pincode, and rider combos.</li>
-                                    <li><strong>Risk Scoring & Fraud Rules (BRE):</strong> Validate correct routing for Green, Amber, and Red channels, including specific fraud flags.</li>
-                                </ul>` },
-                                { title: 'UI/UX Persona-Based Testing', level: 4, 
-                                children: [
-                                    { title: 'Customer Journey', level: 4, content: `<ul><li>Complete digital proposal form, verify real-time field validations.</li><li><strong>Tele-MER & Lab Scheduling:</strong> Receive automated notification (SMS/Email) with a unique, secure link. Use the link to access the self-service portal, schedule a Tele-MER, and select a lab from a list sorted by proximity and performance score.</li><li>Receive a counter-offer link, review it, and provide explicit, OTP-based digital consent.</li></ul>`},
-                                    { title: 'Broker/Agent Portal', level: 4, content: `<ul><li>Submit a proposal on behalf of a customer.</li><li>Track the case status in real-time.</li><li>Verify medical details are NOT visible.</li></ul>`},
-                                     { title: 'Underwriter Workbench (Adjudication)', level: 4, content: `<ul><li><strong>360° View:</strong> Verify the consolidated screen correctly displays all artifacts: proposal, risk score, MER, and lab reports.</li><li><strong>Writes Case Summary:</strong> Verify justification text persists.</li><li><strong>Makes Final Decision & Composes Offer:</strong> Test Approve, Decline, and Counter-Offer actions, including OTP consent workflow.</li><li><strong>Enforces Maker-Checker:</strong> Verify high-value cases are automatically routed for approval.</li></ul>`},
-                                     { title: 'MER Doctor Portal (Execution)', level: 4, content: `<ul><li>Login and view schedule.</li><li><strong>Dynamic Questionnaire:</strong> Verify conditional logic reveals follow-up questions as configured.</li><li><strong>Instant Report Submission:</strong> Verify report is instantly submitted and appears in the UW Workbench.</li></ul>`},
-                                     { title: 'Operations Coordinator Dashboard', level: 4, content: `<ul><li><strong>Manages Exceptions:</strong> Simulate an RPA bot failure; verify a new high-priority alert appears on the exception dashboard with SLA breach timers. From the dashboard, acknowledge and resolve an exception; verify the alert is cleared.</li><li><strong>Facilitates Manual Coordination:</strong> View an outlier case (e.g., customer cannot use portal) and use the 'Log Manual Action' feature to record a phone call with the customer.</li></ul>`},
-                                     { title: 'UW Head / Manager Admin UI', level: 4, content: `<ul><li><strong>Configures Rules:</strong> Navigate to the Business Rules Engine UI, change a risk scoring or fraud rule, and save. Verify the change is active in subsequent tests.</li><li><strong>Manages Templates:</strong> Navigate to the Template Management UI, edit a communication template (e.g., Policy Issuance) AND a dynamic questionnaire's logic (e.g., add a follow-up question), and save the new version.</li><li><strong>Reviews Escalations ("Checker"):</strong> Login and view the 'UW_HEAD_APPROVAL' queue. Open an escalated case and approve it, verifying it moves to the next stage.</li><li><strong>Monitors Performance:</strong> Navigate to the analytics dashboard and verify that performance charts (e.g., Team Productivity, TATs) load with data.</li></ul>`},
-                                    { title: 'Fraud Analyst Journey', level: 4, content: `<ul><li>Login and view the dedicated "Fraud Investigation Queue".</li><li>Open a flagged case and verify the specific fraud rule triggered is displayed.</li><li>Review the case and use the toolkit to either "Clear Fraud Flag" (routing it back to a normal queue) or "Confirm Fraud" (routing to a terminal status).</li></ul>`}
-                                ]},
-                                { title: 'System (Automated) Actions Testing', level: 4, 
-                                content: `<ul>
-                                    <li><strong>Generates Case ID:</strong> Assert response contains a unique 'caseId'.</li>
-                                    <li><strong>Sends Communications:</strong> Mock gateway to verify correct template and data.</li>
-                                    <li><strong>Initiates Policy Issuance:</strong> Mock PAS to verify correct data payload is sent.</li>
-                                    <li><strong>Logs Audit Trail:</strong> Verify all key events are logged immutably with correct user/timestamp.</li>
-                                    <li><strong>Case Closure & Archival:</strong> Verify status changes to 'CLOSED' and archival process is triggered.</li>
-                                </ul>` }
+                                {
+                                    title: 'Dynamic Test Strategy & Coverage Analysis Tool (Python)',
+                                    level: 3,
+                                    children: [
+                                        { title: 'Input Layer', level: 4, content: `<ul><li>Monitors BRD documents, OpenAPI specs, and environment configs.</li></ul>`},
+                                        { title: 'Analysis Layer', level: 4, content: `<ul><li>Uses NLP to parse BRD requirements and generates a structured test plan.</li></ul>`},
+                                        { title: 'Output Layer', level: 4, content: `<ul><li>Produces machine-readable test plans, a live traceability matrix, and change impact reports.</li></ul>`}
+                                    ]
+                                },
+                                {
+                                    title: 'Smart Test Implementation Generation (AI-Assisted)',
+                                    level: 3,
+                                    children: [
+                                        { title: 'Strategy-to-Code Workflow', level: 4, content: `<ul><li>A script uses the structured test plan to send specific prompts to a local LLM, generating Robot Framework code.</li></ul>`},
+                                        { title: 'Human-in-the-Loop Review', level: 4, content: `<ul><li>Generated code is submitted as a Pull Request for SDET review.</li></ul>`}
+                                    ]
+                                },
+                                {
+                                    title: 'Continuous Integration & Feedback Loop',
+                                    level: 3,
+                                    content: `<ol class="list-decimal list-inside space-y-2">
+                                        <li>BRD changes trigger the analysis tool.</li>
+                                        <li>Code changes trigger the full regression suite.</li>
+                                        <li>Test results update the QA Dashboard.</li>
+                                   </ol>`
+                                }
                             ]
                         },
                         {
-                            title: '2.2. Architectural Requirements Testing',
-                            level: 3,
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v18h16.5V3H3.75zM21 5.25v13.5M16.5 3.75h.75m-.75 16.5h.75m-18-16.5h.75m-.75 16.5h.75m16.5-16.5v.75m0 15v.75m-16.5-16.5v.75m0 15v.75" /></svg>`,
-                            content: `<p><strong>Objective:</strong> To validate that the system adheres to the core, high-level architectural principles defined in the BRD.</p>`,
+                            title: 'Test Principles, Metrics & Dashboard',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5h.008v.008H12v-.008z" /><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 12a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" /></svg>`,
                             children: [
-                                { title: 'Attribute-Based Access Control (ABAC) Testing', level: 4,
-                                content: `<ul>
-                                    <li><strong>Underwriter:</strong> Authenticate as Underwriter A. Attempt to view a case in Underwriter B's queue via API and UI. Assert access is denied (403 Forbidden).</li>
-                                    <li><strong>Broker/Agent:</strong> Authenticate as Broker A. Attempt to view the medical details section of their own proposal. Assert sensitive fields are masked or absent.</li>
-                                    <li><strong>UW Head:</strong> Authenticate as UW Head. Verify they can view all cases for underwriters in their team. Attempt to view a case from another team. Assert access is denied.</li>
-                                    <li><strong>Doctor:</strong> Authenticate as Doctor A. Attempt to view medical details of a case not assigned to them. Assert access is denied.</li>
-                                </ul>`},
-                                { title: 'Integration & API Contract Testing', level: 4,
-                                children: [
-                                    { title: 'Internal Systems', level: 5, content: `<ul>
-                                        <li><strong>Policy Administration System (PAS):</strong> Verify API calls for eligibility checks and final policy issuance. Use contract testing (Pact) to ensure the API schema does not change unexpectedly between versions.</li>
-                                        <li><strong>Pricing Engine:</strong> Test the real-time premium calculation API with various inputs to validate accuracy.</li>
-                                        <li><strong>Communications Gateway:</strong> Mock the gateway to verify that SMS, Email, and WhatsApp requests are triggered with the correct templates and recipient data.</li>
-                                    </ul>`},
-                                    { title: 'External Third-Party Systems', level: 5, content: `<ul>
-                                        <li><strong>CIBIL / KYC Services:</strong> Use mock servers to simulate successful, failed, and timeout responses from these services and verify the system handles each case gracefully.</li>
-                                        <li><strong>Lab/TPA Partner Portals:</strong> Test both the primary API integration and the RPA fallback process for sending work orders and ingesting reports.</li>
-                                    </ul>`}
-                                ]},
-                                { title: 'Declarative Configuration Testing', level: 4,
-                                content: `<ul>
-                                    <li><strong>Business Rules:</strong> As UW Head, change a risk scoring or fraud rule threshold in the admin UI. Submit a new case and verify the new logic is applied without any code deployment.</li>
-                                    <li><strong>Workflow Paths:</strong> Reconfigure a workflow to route Amber cases to a specialized queue. Submit a new Amber case and verify it follows the new path.</li>
-                                    <li><strong>SLA Timers:</strong> Change the SLA for an exception queue from 2 hours to 1 hour. Trigger an exception and verify the escalation alert is triggered at the new 1-hour mark.</li>
-                                    <li><strong>Content:</strong> Modify a dynamic questionnaire's logic via the admin UI (e.g., add a new conditional question). Start a new MER and verify the doctor sees the updated questionnaire.</li>
-                                </ul>`},
-                                 { title: 'Event-Driven Architecture Testing', level: 4,
-                                content: `<ul>
-                                    <li><strong>Event Publication:</strong> After submitting a proposal, connect to the message bus (e.g., Kafka, RabbitMQ) and verify a 'proposal.submitted' event is published with the correct schema and payload.</li>
-                                    <li><strong>Event Consumption:</strong> Manually publish a 'lab_report.received' event onto the bus. Verify the Underwriting service consumes this event and attaches the report to the correct case file.</li>
-                                    <li><strong>Decoupling Validation:</strong> Temporarily take the Communications service offline. Send a counter-offer (triggering a communication event). Verify the main underwriting process completes successfully and that the event is queued for later processing once the service is back online.</li>
-                                </ul>`},
+                                { title: 'Core Principles', level: 3, content: `<ul><li><strong>Shift-Left Testing, Test Pyramid, BDD, Continuous Testing.</strong></li></ul>`},
+                                { title: 'Testing Types', level: 3, content: `<ul><li>Unit, Integration, E2E, Regression, Performance, Security (ABAC), Usability, Compatibility, AI/ML Model Testing.</li></ul>`},
+                                { title: 'Live QA Dashboard', level: 3, content: `<ul><li>A single, real-time view of all QA metrics. Widgets include: BRD Coverage, Pass/Fail Trends, Defect Density, Performance SLAs, CI/CD Health.</li></ul>`}
                             ]
                         },
-                         {
-                            title: '2.3. Non-Functional Testing (Performance, Resilience)',
-                            level: 3,
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                        {
+                            title: 'Test Techniques & Knowledge Management',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>`,
+                             children: [
+                                { title: 'Manual & Exploratory', level: 3, content: `<ul><li><strong>Exploratory Testing, Usability Testing.</strong></li></ul>`},
+                                { title: 'AI-Generative & Smart', level: 3, content: `<ul><li><strong>AI-Driven Test Data Generation, Intelligent Log Analysis.</strong></li></ul>`},
+                                { title: 'Living Documentation & Knowledge Bank', level: 3, content: `<ul><li>A centralized wiki where documentation is automatically generated and updated by the CI/CD pipeline.</li></ul>`}
+                            ]
+                        },
+                        {
+                            title: 'Personas & Roles (Actors in the System)',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-4.67c.12-.24.232-.487.335-.737M12 12c-1.882 0-3.418-.99-4.237-2.433A6.375 6.375 0 0112 4.875c1.882 0 3.418.99 4.237 2.433A6.375 6.375 0 0112 12z" /></svg>`,
                             children: [
-                                { title: 'Performance Testing (BRD-Driven)', level: 4, 
-                                content: `<ul>
-                                    <li><strong>Load Testing:</strong> Simulate 1000 concurrent users submitting proposals; ensure p99 response time < 2s.</li>
-                                    <li><strong>Stress Testing:</strong> Ramp up users to find the breaking point of the BRE service.</li>
-                                    <li><strong>Endurance Testing:</strong> Run a steady load for 4+ hours to monitor for memory leaks.</li>
-                                    <li><strong>Component Latency:</strong> Isolate and test external API calls (CIBIL, Pricing) to ensure latency < 500ms.</li>
+                                { title: 'Customer', level: 3, content: `<ul><li><strong>Role:</strong> Applicant seeking insurance.</li><li><strong>Actions:</strong> Fills proposal, schedules medicals, provides consent.</li></ul>`},
+                                { title: 'Broker / Agent', level: 3, content: `<ul><li><strong>Role:</strong> Intermediary.</li><li><strong>Actions:</strong> Initiates proposals, monitors status.</li></ul>`},
+                                { title: 'MER Doctor', level: 3, content: `<ul><li><strong>Role:</strong> Medical professional.</li><li><strong>Actions:</strong> Conducts MER, submits report.</li></ul>`},
+                                { title: 'Underwriter', level: 3, content: `<ul><li><strong>Role:</strong> Core decision-maker.</li><li><strong>Actions:</strong> Reviews case, makes decision, escalates.</li></ul>`},
+                                { title: 'UW Head / Manager', level: 3, content: `<ul><li><strong>Role:</strong> Senior manager.</li><li><strong>Actions:</strong> Configures rules, manages templates, acts as "Checker".</li></ul>`},
+                                { title: 'Operations Coordinator', level: 3, content: `<ul><li><strong>Role:</strong> Manages process health.</li><li><strong>Actions:</strong> Monitors for failures and intervenes.</li></ul>`},
+                                { title: 'System (Automated Actor)', level: 3, content: `<ul><li><strong>Role:</strong> Automated agent.</li><li><strong>Actions:</strong> Generates IDs, runs checks, sends communications, logs audit trail.</li></ul>`}
+                            ]
+                        }
+                    ]
+                },
+                 {
+                    title: '7. Detailed Test Type Scenarios & Implementation',
+                    level: 1,
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5L14.25 10m-8.25 4.5l7.5 7.5 7.5-7.5M3 10h18M7.5 3h9" /></svg>`,
+                    content: 'A detailed breakdown of how API, UI, and Contract testing are applied across the architecture, with scenarios tied to the BRD.',
+                    children: [
+                        {
+                            title: 'API Testing (CQRS & Integration)',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>`,
+                            children: [
+                                { title: 'Command API Scenarios', level: 3, content: `<ul>
+                                    <li><strong>POST /proposals:</strong> Verify success (201), validation failures (400) for invalid age/pincode, and auth for Broker role.</li>
+                                    <li><strong>POST /cases/{id}/decisions:</strong> Test 'Approve', 'Decline', 'Counter-Offer' commands. Verify ABAC ensures only assigned Underwriter can post.</li>
+                                    <li><strong>POST /rulesets/{id}/rules:</strong> As UW Head, test adding a new fraud detection rule.</li>
                                 </ul>`},
-                                { title: 'Exception Handling & Resilience', level: 4,
-                                content: `<ul>
-                                    <li><strong>API Failures:</strong> Mock the PAS as 'down' during a check; verify a clear error is returned.</li>
-                                    <li><strong>RPA Fallback:</strong> Simulate Lab API failure; verify RPA is triggered and that a subsequent RPA failure raises an alert in the Operations Exception Queue.</li>
+                                { title: 'Query API Scenarios', level: 3, content: `<ul>
+                                    <li><strong>GET /workbench/cases?assignee=...:</strong> As Underwriter, verify only assigned cases are returned.</li>
+                                    <li><strong>GET /proposals/{id}/status:</strong> As Broker, verify status is returned but medical details are excluded.</li>
+                                    <li><strong>GET /analytics/team-performance:</strong> As UW Head, verify the API returns aggregated TAT and productivity metrics.</li>
+                                </ul>`},
+                                { title: 'Integration & External API Testing', level: 3, content: `<ul>
+                                    <li><strong>CIBIL/KYC:</strong> Use mock servers to simulate success, failure, and timeout responses.</li>
+                                    <li><strong>Policy Administration System (PAS):</strong> Test the final API call to issue a policy and handle connection errors.</li>
+                                </ul>`}
+                            ]
+                        },
+                        {
+                            title: 'UI Testing (Persona & Component)',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-1.621-1.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>`,
+                             children: [
+                                { title: 'End-to-End Persona Journeys', level: 3, content: `<ul>
+                                    <li><strong>Customer E2E:</strong> Automate the full flow from proposal form -> scheduling MER -> providing OTP consent.</li>
+                                    <li><strong>Underwriter E2E:</strong> Login -> open Workbench -> select case -> compose counter-offer -> submit for approval.</li>
+                                    <li><strong>UW Head E2E:</strong> Login -> navigate to Rules Admin UI -> modify a risk score threshold -> save and publish.</li>
+                                </ul>`},
+                                { title: 'Component & Visual Regression Testing', level: 3, content: `<ul>
+                                    <li><strong>Component Library:</strong> Test UI components in isolation across different states.</li>
+                                    <li><strong>Visual Regression:</strong> Take automated screenshots of key pages and compare against a baseline to catch unintended visual changes.</li>
+                                </ul>`}
+                            ]
+                        },
+                        {
+                            title: 'Contract Testing (Pact)',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.5h9" /></svg>`,
+                            content: '<strong>Impact:</strong> Prevents integration failures between independently deployed services. Failures are caught during the CI pipeline, not in production.',
+                             children: [
+                                { title: 'Internal Service Contracts (Event-Driven)', level: 3, content: `<ul>
+                                    <li><strong>Consumer (Risk Assessment Service):</strong> Defines a contract expecting a 'ProposalSubmitted' event with specific fields.</li>
+                                    <li><strong>Provider (Proposal Ingestion Service):</strong> A test verifies it generates an event that satisfies the contract.</li>
+                                </ul>`},
+                                { title: 'Internal API Contracts', level: 3, content: `<ul>
+                                    <li><strong>Consumer (Adjudication Service):</strong> Defines a contract for how it will call the PAS to issue a policy.</li>
+                                    <li><strong>Provider (Policy Administration System):</strong> The PAS team runs tests to verify their API endpoint satisfies the contract.</li>
                                 </ul>`}
                             ]
                         }
                     ]
                 },
                 {
-                    title: '3. Core Strategy: Dynamic & BRD-Driven Test Automation',
-                    level: 2,
-                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m0 0v-8.25m0 8.25h3.75m-3.75 0H5.25m11.25 0v-8.25m0 8.25h3.75m-3.75 0h-3.75m-3.75 0H1.5m16.5 0h3.75m-3.75 0h-3.75M9 15.75l3-3m0 0l3 3m-3-3v-6m-1.5 6l-3 3m3-3l3-3" /></svg>`,
-                    content: `<p><strong>Objective:</strong> To create a living test plan that dynamically adapts to BRD changes, generates smart test implementations, and provides full QA coverage analysis through a continuous feedback loop.</p>`,
-                    children: [
-                        {
-                            title: '3.1. Dynamic Test Strategy & Coverage Analysis Tool (Python)',
-                            level: 3,
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>`,
-                            children: [
-                                { title: 'Input Layer (What it Reads)', level: 4, content: `<ul><li><strong>BRD Documents:</strong> Monitors a Git repo for changes to requirement files.</li><li><strong>API Specifications:</strong> Ingests OpenAPI/Swagger files.</li><li><strong>Environment Configurations:</strong> Reads YAML files for URLs, credentials.</li></ul>`},
-                                { title: 'Analysis & Logic Layer (How it Thinks)', level: 4, content: `<ul><li><strong>BRD Parser (NLP):</strong> Identifies entities, actions, and conditions, assigning a unique ID to each requirement.</li><li><strong>Test Strategy Generator:</strong> Creates a structured test plan (API, Perf, Data, Mocks) for each requirement ID.</li></ul>` },
-                                { title: 'Output Layer (What it Produces)', level: 4, content: `<ul><li><strong>Structured Test Plans (JSON/YAML):</strong> Machine-readable input for the AI test generator.</li><li><strong>Live Traceability Matrix:</strong> HTML dashboard mapping requirements to test status.</li><li><strong>Change Impact Report:</strong> Highlights new/modified requirements and their impact.</li></ul>` }
-                            ]
-                        },
-                        {
-                            title: '3.2. Smart Test Implementation Generation (AI-Assisted)',
-                            level: 3,
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>`,
-                             children: [
-                                { title: 'Strategy-to-Code Workflow', level: 4, content: `<ul><li><strong>Trigger:</strong> The CI pipeline executes the 'llm_test_generator.py' script, feeding it the structured Test Plan JSON generated by the analysis tool.</li><li><strong>Precise LLM Prompting:</strong> Instead of a vague prompt, the script sends a highly specific request: <div class="code-block">"Using Robot Framework, create a test case for REQ-TRIAGE-01. Use the keyword 'Submit Proposal And Verify Routing'. The test data is a payload for a customer with score 299. The expected routing result is 'STP'."</div></li><li><strong>Code Generation:</strong> The local LLM generates a high-quality, targeted .robot file snippet that uses existing keywords, drastically reducing the need for manual refactoring.</li></ul>`},
-                                { title: 'Human-in-the-Loop Review', level: 4, content: `<ul><li><strong>Automated Pull Request:</strong> The generated code is committed to a new branch, and a PR is automatically created, tagging the SDET team for review.</li><li><strong>SDET Refinement:</strong> The engineer reviews the logic, ensures it adheres to best practices, and merges it into the main test suite. This keeps the human expert in control of quality while automating the repetitive coding task.</li></ul>`}
-                            ]
-                        },
-                        {
-                           title: '3.3. Continuous Integration & Feedback Loop',
-                           level: 3,
-                           icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.691v4.992m0 0h-4.992m4.992 0l-3.181-3.183a8.25 8.25 0 00-11.667 0l-3.181 3.183" /></svg>`,
-                           content: `<ol class="list-decimal list-inside space-y-2">
-                                <li><strong>On BRD Change:</strong> A commit to the '/brd' folder triggers the 'Dynamic Test Strategy Tool'. The impact report is published.</li>
-                                <li><strong>On Code Change:</strong> A commit to the application's 'main' branch triggers the full regression suite (UI, API, etc.).</li>
-                                <li><strong>Scheduled Runs:</strong> Nightly runs execute performance and full E2E tests against the staging environment.</li>
-                                <li><strong>Feedback:</strong> All test results are pushed to the QA Dashboard, updating the traceability matrix. Failures immediately create alerts in Slack/Teams with direct links to the failed test report and the associated BRD requirement.</li>
-                           </ol>`
-                        }
-                    ]
-                },
-                 {
-                    title: '4. Test Principles, Metrics & Dashboard',
-                    level: 2,
-                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5h.008v.008H12v-.008z" /><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 12a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" /></svg>`,
-                    content: `<ul>
-                                <li><strong>Core Principles:</strong> Shift-Left, Test Pyramid, BDD, Continuous Testing.</li>
-                                <li><strong>Testing Types:</strong> Integration, E2E, Regression, Usability, Compatibility, AI/ML Model.</li>
-                                <li><strong>Live QA Dashboard:</strong> Single source of truth for all metrics including BRD Coverage, Pass/Fail Trends, Defect Density, Performance SLAs, and CI/CD Pipeline Health.</li>
-                            </ul>`
-                },
-                {
-                    title: '5. Test Techniques & Knowledge Management',
-                    level: 2,
-                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>`,
-                    content: `<ul>
-                                <li><strong>Manual & Exploratory:</strong> Session-Based Testing, Error Guessing.</li>
-                                <li><strong>AI-Generative & Smart:</strong> AI-Generated Test Data, Visual Regression, Test Case Optimization, Intelligent Log Analysis.</li>
-                                <li><strong>Living Documentation:</strong> Use a Wiki with automated documentation for keywords and BRD test coverage, creating a single source of truth for the QA process.</li>
-                            </ul>`
-                },
-                {
-                    title: '6. Personas & Roles (Actors in the System)',
+                    title: '8. Architectural Requirements Testing (BRD Section 1)',
                     level: 1,
-                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-4.67c.12-.24.232-.487.335-.737M12 12c-1.882 0-3.418-.99-4.237-2.433A6.375 6.375 0 0112 4.875c1.882 0 3.418.99 4.237 2.433A6.375 6.375 0 0112 12z" /></svg>`,
-                    content: `<p>A clear definition of all user roles involved in the underwriting process, based on the BRD. This is the foundation for persona-based testing.</p>`,
-                    children: [
-                        { title: 'Customer', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>`, content: `<ul><li><strong>Role:</strong> The applicant seeking health insurance.</li><li><strong>Key Actions:</strong> Fills out the digital proposal, schedules medicals via the self-service portal, attends the Tele-MER, and provides digital consent for counter-offers.</li></ul>`},
-                        { title: 'Broker / Agent', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3 3 0 013 11.18V11.18a3 3 0 013-3h1.5a3 3 0 013 3v.062a3 3 0 01-3 3h-1.5a3 3 0 01-3-3v-.062a3 3 0 00-3-3H6a3 3 0 00-3 3v.682a3 3 0 003 3h1.5m9 2.25a3 3 0 01-3-3v-.062a3 3 0 013-3h1.5a3 3 0 013 3v.062a3 3 0 01-3 3h-1.5z" /></svg>`, content: `<ul><li><strong>Role:</strong> The intermediary who submits and tracks proposals on behalf of customers.</li><li><strong>Key Actions:</strong> Initiates proposals via the Partner Portal, monitors real-time status, and facilitates communication.</li><li><strong>Access Restriction:</strong> Cannot view sensitive medical details.</li></ul>`},
-                        { title: 'MER Doctor', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9A2.25 2.25 0 004.5 18.75z" /></svg>`, content: `<ul><li><strong>Role:</strong> A medical professional conducting the Tele-Medical Examination.</li><li><strong>Key Actions:</strong> Views their schedule, conducts the MER using a digital toolkit with a dynamic questionnaire, and submits a standardized digital report instantly.</li><li><strong>Access Restriction:</strong> Can only view medical details of applicants specifically assigned to them.</li></ul>`},
-                        { title: 'Underwriter', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>`, content: `<ul><li><strong>Role:</strong> The core decision-maker in the underwriting process.</li><li><strong>Key Actions:</strong> Reviews the consolidated case file in the UW Workbench, writes a case summary, requests additional information, makes the final decision (Accept/Decline/Counter-Offer), and escalates complex cases.</li><li><strong>Access Restriction:</strong> Can only view cases currently in their assigned work queue.</li></ul>`},
-                        { title: 'UW Head / Manager', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3 3 0 013 11.18V11.18a3 3 0 013-3h1.5a3 3 0 013 3v.062a3 3 0 01-3 3h-1.5a3 3 0 01-3-3v-.062a3 3 0 00-3-3H6a3 3 0 00-3 3v.682a3 3 0 003 3h1.5m9 2.25a3 3 0 01-3-3v-.062a3 3 0 013-3h1.5a3 3 0 013 3v.062a3 3 0 01-3 3h-1.5z" /></svg>`, content: `<ul><li><strong>Role:</strong> A senior manager with oversight and administrative responsibilities.</li><li><strong>Key Actions:</strong> Configures business rules (risk scoring, fraud), manages communication and questionnaire templates, acts as the "Checker" for escalated cases, and monitors team performance via analytics dashboards.</li><li><strong>Access Restriction:</strong> Can view all cases within their team's purview for oversight and assignment.</li></ul>`},
-                        { title: 'Operations Coordinator', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>`, content: `<ul><li><strong>Role:</strong> Manages the health and efficiency of the automated process.</li><li><strong>Key Actions:</strong> Monitors a dedicated dashboard for process failure alerts (e.g., RPA bot failure, SLA breaches) and intervenes manually. Facilitates coordination for outlier cases that cannot be automated.</li></ul>`},
-                        { title: 'System (Automated Actor)', level: 2, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.65H8.25a3.375 3.375 0 00-3.285 2.65l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008zm-3 0h.008v.008h-.008v-.008z" /></svg>`, content: `<ul><li><strong>Role:</strong> An automated agent that performs predefined system actions.</li><li><strong>Key Actions:</strong> Generates Case IDs, performs pre-admissibility checks, executes triage rules, sends automated communications, enforces workflows, initiates policy issuance, and logs an immutable audit trail.</li></ul>`}
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.25 2.25h-4.5a2.25 2.25 0 00-2.25 2.25v15A2.25 2.25 0 005.75 22.5h12.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H13.75m-3.5 0v1.5m0-1.5h3.5m-3.5 0p-3.5 0M10.25 6.75h3.5m-3.5 3h3.5m-3.5 3h3.5m-3.5 3h3.5M10.25 2.25c-1.12 0-2.05.5-2.625 1.25M13.75 2.25c1.12 0 2.05.5 2.625 1.25" /></svg>`,
+                    content: 'Validating the core, cross-cutting architectural principles defined as high-level project requirements.',
+                     children: [
+                        {
+                            title: 'Attribute-Based Access Control (ABAC) Testing',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>`,
+                            children: [
+                                { title: 'Underwriter Role Scenarios', level: 3, content: `<ul>
+                                    <li><strong>API Test:</strong> Authenticate as an Underwriter and call 'GET /workbench/cases'. Assert that only cases with 'assigneeId' matching the Underwriter's ID are returned.</li>
+                                    <li><strong>UI Test:</strong> Login as an Underwriter. Navigate to the workbench. Verify that the UI only displays cases assigned to this user. Attempt to access a case assigned to another underwriter via a direct URL and assert access is denied.</li>
+                                </ul>`},
+                                { title: 'Broker/Agent Role Scenarios', level: 3, content: `<ul>
+                                    <li><strong>API Test:</strong> Authenticate as a Broker. Call 'GET /proposals/{id}/status' for a proposal they sourced. Assert a 200 OK with status data. Call the same endpoint for a proposal they did NOT source and assert a 403 Forbidden or 404 Not Found.</li>
+                                    <li><strong>API Test:</strong> Verify that the response for the proposal status does NOT contain any medical details fields.</li>
+                                </ul>`},
+                                 { title: 'UW Head Role Scenarios', level: 3, content: `<ul>
+                                    <li><strong>API Test:</strong> Authenticate as a UW Head. Call 'GET /workbench/cases?team=MyTeam'. Assert that all cases for their team are returned, regardless of assignee.</li>
+                                    <li><strong>UI Test:</strong> Login as UW Head. Verify they can see an overview of all cases for their team and have a UI option to manually re-assign a case.</li>
+                                </ul>`},
+                                { title: 'Doctor Role Scenarios', level: 3, content: `<ul>
+                                    <li><strong>API Test:</strong> Authenticate as a Doctor. Call 'GET /mer-cases/{id}/medical-details'. Assert a 200 OK for an assigned case. Call the same endpoint for a non-assigned case and assert a 403 Forbidden.</li>
+                                </ul>`}
+                            ]
+                        },
+                         {
+                            title: 'Integration Point Validation',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m17.432 0A17.919 17.919 0 0012 16.5c3.162 0 6.133-.815 8.716-2.247" /></svg>`,
+                             children: [
+                                { title: 'Internal Core Systems', level: 3, content: `<ul>
+                                    <li><strong>PAS:</strong> Contract tests and E2E tests for eligibility checks and final policy issuance.</li>
+                                    <li><strong>Pricing Engine:</strong> Performance and integration tests to ensure real-time premium calculation is fast and accurate under load.</li>
+                                     <li><strong>Communications Gateway:</strong> E2E tests that trigger an SMS/Email and use a mock service (like MailHog) to verify the communication was sent with the correct template and data.</li>
+                                </ul>`},
+                                { title: 'External Third-Party Systems', level: 3, content: `<ul>
+                                    <li><strong>CIBIL/KYC:</strong> Integration tests using mock servers to simulate various responses (success, failure, user not found, timeout) and ensure the system handles each case correctly.</li>
+                                    <li><strong>Lab/TPA Portals:</strong> Test both the primary API integration and the fallback RPA process. Create scenarios where the API fails to ensure the RPA bot is correctly triggered as a compensating action.</li>
+                                </ul>`}
+                            ]
+                        },
+                        {
+                            title: 'Declarative Configuration Testing',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-1.007 1.11-1.227a48.13 48.13 0 011.66 0c.55.22 1.02.685 1.11 1.227l.128.765a48.273 48.273 0 012.358 1.256l.764-.128c.542-.09 1.007.56 1.227 1.11a48.13 48.13 0 010 1.66c-.22.55-.685 1.02-1.227 1.11l-.765.128a48.273 48.273 0 01-1.256 2.358l.128.764c.09.542-.56 1.007-1.11 1.227a48.13 48.13 0 01-1.66 0c-.55-.22-1.02-.685-1.11-1.227l-.128-.765a48.273 48.273 0 01-2.358-1.256l-.764.128c-.542.09-1.007-.56-1.227-1.11a48.13 48.13 0 010-1.66c.22-.55.685-1.02 1.227-1.11l.765-.128a48.273 48.273 0 011.256-2.358l-.128-.764zM12 9a3 3 0 100 6 3 3 0 000-6z" /></svg>`,
+                             children: [
+                                { title: 'Business Rules', level: 3, content: `<ul><li><strong>Test Flow:</strong> 1. Run a test case for a low-risk applicant and assert they go to the Green Channel. 2. As UW Head, use the Admin UI to lower the Green Channel threshold. 3. Rerun the exact same test case. 4. Assert the applicant now goes to the Amber Channel. This proves the configuration change worked without a deployment.</li></ul>`},
+                                { title: 'Workflow Paths', level: 3, content: `<ul><li>Similar to above, configure a workflow step to be skipped for a certain plan type, then run tests to verify the workflow orchestrator correctly bypasses that step.</li></ul>`},
+                                { title: 'SLA Timers', level: 3, content: `<ul><li>Adjust an SLA timer for MER scheduling, then run a test where the customer does not schedule within the new, shorter time. Verify an escalation event is triggered correctly.</li></ul>`},
+                                { title: 'Content Templates', level: 3, content: `<ul><li>As a business user, update the text of the counter-offer email template. Trigger a counter-offer scenario and verify the customer receives the updated communication.</li></ul>`}
+                            ]
+                        },
+                        {
+                            title: 'Event-Driven Architecture Validation',
+                            level: 2,
+                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>`,
+                             children: [
+                                { title: 'Key Business Event Verification', level: 3, content: `<ul>
+                                    <li>For each key event listed in the BRD (e.g., 'proposal.submitted', 'risk_assessment.completed', 'mer.completed', 'lab_report.received', 'uw.decision.made'), create a dedicated test.</li>
+                                    <li>The test should trigger the upstream action, then consume from the message bus (e.g., Kafka topic) to verify: 1. The event was published. 2. The event schema matches the defined contract. 3. The event payload contains the correct data for the specific test case.</li>
+                                </ul>`}
+                            ]
+                        }
                     ]
                 }
             ]
