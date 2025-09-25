@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Orchestration Engine - Professional Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .stage-card {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .component-card {
+            border-left: 4px solid #4f46e5;
+            transition: all 0.3s ease-in-out;
+        }
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .smart-link {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px dashed transparent;
+            transition: all 0.3s ease-in-out;
+            background-color: #f1f5f9; 
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .smart-link:hover {
+            border-color: #6366f1;
+            background-color: #eef2ff;
+        }
+        .highlight {
+            border: 2px solid #4f46e5 !important;
+            background-color: #c7d2fe !important;
+            color: #1e1b4b;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+            position: relative;
+            z-index: 10;
+        }
+        .data-label {
+            font-weight: 600;
+            color: #4338ca;
+            margin-top: 8px;
+        }
+        .info-btn {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #eef2ff;
+            color: #4f46e5;
+            margin-left: 8px;
+            font-style: normal;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .info-btn:hover {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: white; padding: 2rem; border-radius: 12px;
+            max-width: 600px; width: 90%;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transform: translateY(-20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 15px; right: 15px; cursor: pointer;
+            width: 30px; height: 30px; background-color: #f3f4f6;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.5rem; color: #6b7280;
+        }
+        .leader-line { z-index: 5; transition: all 0.3s ease-in-out; }
+        .collapsible-content pre {
+            background-color: #1e293b; color: #e2e8f0; padding: 1rem;
+            border-radius: 8px; overflow-x: auto; font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+        }
+        .toggle-icon { transition: transform 0.3s ease; }
+        .poc-justification {
+            background-color: #fef9c3; color: #854d0e; padding: 0.5rem;
+            border-radius: 0.375rem; margin-top: 0.5rem; font-size: 0.875rem;
+        }
+        .timeline-phase {
+            border-left: 3px solid #cbd5e1;
+            padding-left: 1.5rem;
+        }
+        .timeline-milestone {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+        .timeline-milestone::before {
+            content: '';
+            position: absolute;
+            left: -2.0rem;
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800">QA Orchestration Engine Blueprint</h1>
+        <p class="mt-2 text-lg text-gray-600">An interactive mind map of the data flow. Click a <span class="font-semibold text-indigo-600">data element</span> or info icon <span class="info-btn" style="cursor:default; transform: scale(0.8);">ⓘ</span> for details.</p>
+    </div>
+
+    <!-- Test Pyramid Section -->
+    <div class="max-w-7xl mx-auto mb-8 bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+        <button data-target="pyramid-content" data-icon="pyramid-icon" class="collapsible-toggle w-full text-left focus:outline-none">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-indigo-700">Test Strategy & Pyramid</h2>
+                    <p class="text-gray-500 mt-1">Click to see the foundational testing strategy.</p>
+                </div>
+                <span id="pyramid-icon" class="toggle-icon text-2xl text-indigo-600 font-bold transform">-&gt;</span>
+            </div>
+        </button>
+        <div id="pyramid-content" class="collapsible-content hidden mt-4 border-t pt-4 text-gray-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <p>Our strategy is built on the **Agile Test Pyramid**, emphasizing a shift-left approach. We build a strong foundation of fast, reliable tests at the lower levels to catch issues early, reducing our reliance on slower, more brittle tests at the top.</p>
+                    <ul class="list-disc pl-5 mt-4 space-y-2">
+                        <li><strong class="text-gray-900">Unit Tests (Base):</strong> The largest and fastest group of tests, written by developers to verify individual functions and components. This is our first line of defense.</li>
+                        <li><strong class="text-gray-900">Integration & API Tests (Middle):</strong> Our primary focus for this event-driven system. These tests verify the contracts and interactions between services, ensuring the API layer is robust and reliable.</li>
+                        <li><strong class="text-gray-900">System & UI Tests (Peak):</strong> The smallest group, focused on critical, persona-based end-to-end user journeys to validate the complete workflow.</li>
+                        <li><strong class="text-gray-900">Non-Functional (Sides):</strong> Security, Performance, and other non-functional tests are automated and integrated across all layers.</li>
+                    </ul>
+                </div>
+                <div>
+                    <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="100,10 10,140 190,140" style="fill:#e0e7ff;stroke:#6366f1;stroke-width:1"/>
+                        <polygon points="100,10 40,100 160,100" style="fill:#c7d2fe;stroke:#6366f1;stroke-width:1"/>
+                        <polygon points="100,10 70,55 130,55" style="fill:#a5b4fc;stroke:#6366f1;stroke-width:1"/>
+                        <line x1="10" y1="100" x2="190" y2="100" style="stroke:#6366f1;stroke-width:1;stroke-dasharray:4"/>
+                        <line x1="40" y1="55" x2="160" y2="55" style="stroke:#6366f1;stroke-width:1;stroke-dasharray:4"/>
+                        <text x="100" y="40" font-family="Inter, sans-serif" font-size="10" fill="#312e81" text-anchor="middle" font-weight="bold">UI/System</text>
+                        <text x="100" y="80" font-family="Inter, sans-serif" font-size="10" fill="#312e81" text-anchor="middle" font-weight="bold">API/Integration</text>
+                        <text x="100" y="125" font-family="Inter, sans-serif" font-size="10" fill="#312e81" text-anchor="middle" font-weight="bold">Unit Tests</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 6-Month Roadmap Section -->
+    <div class="max-w-7xl mx-auto mb-8 bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+        <button data-target="roadmap-content" data-icon="roadmap-icon" class="collapsible-toggle w-full text-left focus:outline-none">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-indigo-700">6-Month Strategic Quality Engineering Roadmap</h2>
+                    <p class="text-gray-500 mt-1">Click to see the detailed week-by-week plan for building a mature, automation-first quality culture.</p>
+                </div>
+                <span id="roadmap-icon" class="toggle-icon text-2xl text-indigo-600 font-bold transform">-&gt;</span>
+            </div>
+        </button>
+        <div id="roadmap-content" class="collapsible-content hidden mt-4 border-t pt-4 space-y-8 text-gray-700">
+             <!-- Foundational Concepts -->
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Guiding Principles & Core Concepts</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <strong class="text-gray-900">7 Testing Principles:</strong>
+                        <ul class="list-disc pl-5 mt-1 text-sm text-gray-600">
+                            <li>Testing shows the presence of defects, not their absence.</li>
+                            <li>Exhaustive testing is impossible.</li>
+                            <li>Early testing saves time and money.</li>
+                            <li>Defects cluster together (Pareto principle).</li>
+                            <li>Beware of the pesticide paradox.</li>
+                            <li>Testing is context-dependent.</li>
+                            <li>Absence-of-errors fallacy.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong class="text-gray-900">Test Approaches:</strong>
+                         <dl class="mt-1 text-sm text-gray-600">
+                            <dt class="font-semibold">White Box:</dt><dd class="pl-4 mb-1">Testing internal code structure. Applied during **Unit Testing**.</dd>
+                            <dt class="font-semibold">Black Box:</dt><dd class="pl-4 mb-1">Testing functionality without internal knowledge. Applied during **API, System, and Acceptance Testing**.</dd>
+                            <dt class="font-semibold">Automation Strategy:</dt><dd class="pl-4 mb-1">**Automation-First** for all repeatable tests (API, Regression). **Manual/Semi-Automated** for exploratory, usability, and User Acceptance Testing (UAT).</dd>
+                        </dl>
+                    </div>
+                     <div class="md:col-span-2">
+                        <strong class="text-gray-900">Test Documentation:</strong>
+                        <p class="text-sm text-gray-600 mt-1">A lightweight but comprehensive documentation strategy will be followed, including a Master Test Plan, Level-Specific Test Plans (API, UI), automated Test Case generation (via Orchestration Engine), and Test Summary Reports.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Weekly Timeline -->
+            <div class="timeline-phase" id="weekly-timeline-container">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Week-by-Week Implementation Plan</h3>
+                <!-- Weeks will be dynamically inserted here by script -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Use Case Example Section -->
+    <div class="max-w-7xl mx-auto mb-8 bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+        <button data-target="example-content" data-icon="example-icon" class="collapsible-toggle w-full text-left focus:outline-none">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-indigo-700">Use Case Example: Automated Rule-Based Routing</h2>
+                    <p class="text-gray-500 mt-1">Click to see a step-by-step example of how the engine processes a BRD requirement.</p>
+                </div>
+                <span id="example-icon" class="toggle-icon text-2xl text-indigo-600 font-bold transform">-&gt;</span>
+            </div>
+        </button>
+        <div id="example-content" class="collapsible-content hidden mt-4 border-t pt-4 space-y-6 text-gray-700">
+             <div>
+                <h3 class="font-bold text-lg text-gray-800 mb-2">Stage 1: INGESTION</h3>
+                <p class="font-semibold">Input: Raw BRD Text from Section 2.2</p>
+                <pre><code>"Green Channel (STP): If Score < 300..."
+"Red Channel (MER + Labs): If Score >= 600..."
+"Amber Channel (MER Only): All other cases (Score between 300-599)."</code></pre>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg text-gray-800 mb-2">Stage 2: ANALYSIS & GENERATION</h3>
+                <p class="font-semibold">1. AI-Generated Gherkin Scenarios:</p>
+                <pre><code>Scenario: Route to Green Channel for low-risk proposals
+  Given a proposal has been submitted
+  When the calculated Composite Risk Score is less than 300
+  Then the case should be routed to the "Green Channel"</code></pre>
+                <p class="font-semibold mt-4">2. Generated Data Profiles:</p>
+                <pre><code># Profile for Green Channel (REQ-2.2-GREEN)
+{
+  "properties": {
+    "composite_risk_score": {
+      "type": "integer",
+      "maximum": 299
+    }
+  }
+}</code></pre>
+                 <p class="font-semibold mt-4">3. Final Synthesized Test Case in `test_plan.yml`:</p>
+                <pre><code>- test_case: "Test Green Channel Routing"
+  requirement_id: "REQ-2.2-GREEN"
+  api_target: { endpoint: "/triage", method: "POST" }
+  data_profile_id: "REQ-2.2-GREEN-Profile"
+  expected_outcome:
+    status_code: 200
+    json_body:
+      - { path: "$.routing_decision", expected_value: "GREEN_CHANNEL" }</code></pre>
+            </div>
+            <div>
+                 <h3 class="font-bold text-lg text-gray-800 mb-2">Stage 3: EXECUTION</h3>
+                <p class="font-semibold">1. Mock Data Factory generates a valid request:</p>
+                <pre><code>// Request Body sent to POST /triage
+{
+  "applicant_name": "Jane Doe",
+  "sum_assured": 750000,
+  "composite_risk_score": 157 // Generated value matching profile
+}</code></pre>
+                <p class="font-semibold mt-4">2. Assertion Engine validates the response:</p>
+                <pre><code>// Response Body from the server
+{
+  "case_id": "UW-98765",
+  "routing_decision": "GREEN_CHANNEL",
+  "next_step": "AWAIT_POLICY_ISSUANCE"
+}
+
+// Assertion `response.json()['routing_decision'] == "GREEN_CHANNEL"` -> PASS</code></pre>
+            </div>
+             <div>
+                 <h3 class="font-bold text-lg text-gray-800 mb-2">Stage 4: FEEDBACK</h3>
+                <p>When a business user updates the BRD to change the Green Channel threshold to `< 350`, the Diff Engine detects the change in the re-generated `test_plan.yml` and triggers a smart alert.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Stages 1-4 Mind Map -->
+        <!-- Stage 1: Ingestion -->
+        <div class="stage-card rounded-xl shadow-lg p-5">
+            <h2 class="text-xl font-bold text-center text-indigo-700 border-b-2 border-indigo-200 pb-2">Stage 1: INGESTION</h2>
+            <div class="mt-4 component-card bg-white rounded-lg shadow-md p-4 flex-grow">
+                <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                    Ingestion Module
+                    <i class="info-btn" 
+                       data-title="Ingestion Module"
+                       data-what="The system's unified entry point. It automatically reads disparate source documents (BRDs, OpenAPI specs, environment configurations) and standardizes them into a single, in-memory data structure."
+                       data-why="This creates a single, reliable source of truth. Automating ingestion prevents manual data entry errors, ensures consistency, and allows the entire test pipeline to react instantly to any change in a source document, forming the foundation of a 'living' test suite."
+                       data-tech="Uses libraries like `pypdf` for documents and `pyyaml` for API specs. Employs `Pydantic` models to enforce strict data schemas. An AI enhancement uses Sentence Transformers to create a vector-based knowledge graph for semantic understanding of requirements.">ⓘ</i>
+                </h3>
+                <div class="mt-3">
+                    <p class="data-label">Input Data</p>
+                    <span class="text-sm text-gray-700">📄 BRD, 🔑 Env Configs, 📜 API Spec</span>
+                    <p class="data-label">Output Data</p>
+                    <span id="output-context" data-target="input-context" class="smart-link text-sm font-medium text-gray-900"
+                          data-title="Data Flow: Consolidated Context"
+                          data-what="A structured Python object containing the semantically parsed knowledge graph from the BRD, a dictionary of environment variables, and the parsed API schema."
+                          data-why="This object serves as the standardized, machine-readable 'source of truth' for the entire Analysis stage, ensuring all subsequent components work from the same consistent and verified information."
+                          data-tech="Likely implemented as a `Pydantic` model or a dataclass containing a `ChromaDB` vector index for the BRD, a dictionary for configs, and a nested dictionary for the API schema.">
+                        Consolidated In-Memory Context
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 2: Analysis -->
+        <div class="stage-card rounded-xl shadow-lg p-5">
+            <h2 class="text-xl font-bold text-center text-indigo-700 border-b-2 border-indigo-200 pb-2">Stage 2: ANALYSIS</h2>
+            <div class="space-y-4 mt-4 flex-grow flex flex-col justify-between">
+                <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                       <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        Requirement Extractor
+                        <i class="info-btn"
+                           data-title="Requirement Extractor"
+                           data-what="An NLP and AI-powered engine that scans the ingested BRD knowledge graph to identify, isolate, and structure individual testable requirements."
+                           data-why="This is the critical bridge from human language to machine logic. It automates the tedious and error-prone process of interpreting business requirements and ensures that every feature described in the BRD has a corresponding, traceable digital representation."
+                           data-tech="Uses NLP libraries like `spaCy` for entity recognition. An LLM (e.g., Gemini API) is prompted to convert extracted requirements into structured Gherkin (`Given/When/Then`) scenarios for maximum clarity.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                        <p class="data-label">Input Data</p>
+                        <span id="input-context" data-source-ids="output-context" class="smart-link text-sm">Context Object</span>
+                        <p class="data-label">Output Data</p>
+                        <span id="output-reqs" data-target="input-reqs1 input-reqs2" class="smart-link text-sm"
+                              data-title="Data Flow: Tagged Requirements"
+                              data-what="A list of structured objects, where each object represents a single testable requirement. It includes a unique ID, the raw text, and the AI-generated Gherkin scenario."
+                              data-why="This structured list is the master checklist for the entire testing process. The unique ID provides end-to-end traceability, from the BRD sentence to the final test result."
+                              data-tech="A Python list of dataclasses, e.g., `[Requirement(id='req-001', text='...', gherkin='Given...'), ...]`.">
+                              Tagged Requirements List
+                        </span>
+                    </div>
+                </div>
+                <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                        Data Profile Generator
+                         <i class="info-btn"
+                           data-title="Data Profile Generator"
+                           data-what="A rule-based and ML-driven component that creates data 'recipes' (profiles) needed to test each requirement. For example, for a 'high-risk' requirement, it defines that a test needs data where `score >= 600`."
+                           data-why="This decouples test logic from test data. It allows the system to intelligently generate an infinite variety of test data that specifically targets the conditions of a requirement, including high-risk edge cases predicted by the ML model."
+                           data-tech="A rule engine maps keywords to JSON Schema constructs. A `scikit-learn` classification model, trained on historical bug data from Jira, assigns a risk score to profiles to prioritize data generation for historically problematic areas.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-reqs1" data-source-ids="output-reqs" class="smart-link text-sm">Tagged Requirements</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-profiles" data-target="input-profiles" class="smart-link text-sm"
+                            data-title="Data Flow: JSON Data Profiles"
+                            data-what="A collection of JSON Schema objects, each linked to a requirement ID. These schemas define the structure, constraints, and values needed for test data (e.g., `{ 'properties': { 'score': { 'minimum': 600 } } }`)."
+                            data-why="This provides a standardized, machine-readable format for defining data needs, which can be directly fed into a mock data generation tool, ensuring data is always valid and relevant."
+                            data-tech="A dictionary mapping requirement IDs to JSON Schema objects.">
+                            JSON Data Profiles
+                        </span>
+                    </div>
+                </div>
+                <div class="component-card bg-white rounded-lg shadow-md p-4">
+                     <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        Test Asset Synthesizer
+                        <i class="info-btn"
+                           data-title="Test Asset Synthesizer"
+                           data-what="The final assembly step. It combines the 'what' (requirements), the 'how' (data profiles), and the 'where' (API spec) to generate a complete, executable test plan file."
+                           data-why="This automates the creation of the test suite itself. It ensures that every generated test is directly traceable to a business requirement, has a valid data strategy, and targets the correct API endpoint, eliminating manual test case writing."
+                           data-tech="Uses the `PyYAML` library to programmatically construct the `test_plan.yml` file. Logic maps requirement entities to API endpoint paths defined in the OpenAPI spec. The final file is committed to version control using `GitPython`.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-reqs2" data-source-ids="output-reqs" class="smart-link text-sm">Requirements &</span><br>
+                         <span id="input-profiles" data-source-ids="output-profiles" class="smart-link text-sm">Data Profiles</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-plan" data-target="input-plan" class="smart-link text-sm"
+                            data-title="Data Flow: test_plan.yml"
+                            data-what="A version-controlled YAML file that represents the entire test suite. Each entry contains a test case with its requirement ID, target API endpoint, data profile reference, and expected outcome."
+                            data-why="This file is the master blueprint for the Execution stage. Being version-controlled and human-readable, it allows for easy review, auditing, and manual adjustments if necessary, while serving as the primary input for the test runner."
+                            data-tech="A structured YAML file, which is both human-readable and easily parsed by testing frameworks.">
+                            `test_plan.yml`
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Stage 3: Execution -->
+        <div class="stage-card rounded-xl shadow-lg p-5">
+            <h2 class="text-xl font-bold text-center text-indigo-700 border-b-2 border-indigo-200 pb-2">Stage 3: EXECUTION</h2>
+            <div class="space-y-4 mt-4 flex-grow flex flex-col justify-between">
+                 <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                       <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Test Runner
+                        <i class="info-btn"
+                           data-title="Test Runner"
+                           data-what="The engine that reads the `test_plan.yml` and orchestrates the test execution. It dynamically generates and runs tests in memory based on the plan."
+                           data-why="This provides a flexible and powerful execution core. Because tests are generated dynamically, the framework doesn't need to be rewritten when requirements change; it simply adapts to the new test plan, enabling true continuous testing."
+                           data-tech="A `pytest` framework using the `pytest_generate_tests` hook. This hook reads the `test_plan.yml` and uses `pytest.param` to create a unique, parametrized test for each entry in the plan at runtime.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-plan" data-source-ids="output-plan" class="smart-link text-sm">`test_plan.yml`</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-testcase" data-target="input-testcase-profile" class="smart-link text-sm"
+                            data-title="Data Flow: Individual Test Case"
+                            data-what="A single test case definition, read from the plan, containing the target endpoint, the reference to its data profile, and expected assertions."
+                            data-why="Breaking the plan into individual, executable units allows the runner to manage state, orchestrate data generation, and report results on a per-test basis."
+                            data-tech="An in-memory object representing one entry from the `test_plan.yml`.">
+                            Individual Test Case
+                        </span>
+                    </div>
+                </div>
+                 <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        Mock Data Factory
+                        <i class="info-btn"
+                           data-title="Mock Data Factory"
+                           data-what="A dedicated service that takes a JSON Data Profile (the 'recipe') and generates a complete, valid, and randomized data payload (the 'meal') on the fly."
+                           data-why="This enables data-rich testing without the need for large, static, hardcoded data sets. It ensures that every test run uses fresh, unique data that conforms to the required schema, increasing the chances of finding unexpected bugs."
+                           data-tech="Uses the `Faker` library to generate realistic data (names, addresses, etc.) that conforms to the JSON Schema passed from the Data Profile Generator.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-testcase-profile" data-source-ids="output-testcase" class="smart-link text-sm">JSON Data Profile</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-mockdata" data-target="input-mockdata" class="smart-link text-sm"
+                            data-title="Data Flow: Dynamic Mock Data"
+                            data-what="A fully-formed JSON object (e.g., a request body) that is syntactically and semantically valid according to the data profile's schema."
+                            data-why="This is the actual payload that will be sent to the application under test, created just-in-time for the execution of a single test."
+                            data-tech="A Python dictionary (`dict`) serialized into a JSON string.">
+                            Dynamic Mock Data
+                        </span>
+                    </div>
+                </div>
+                <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        API Request Executor
+                         <i class="info-btn"
+                           data-title="API Request Executor"
+                           data-what="A simple, robust component responsible for one thing: making the HTTP request to the application under test with the generated data."
+                           data-why="It abstracts the networking layer, handling details like authentication headers, timeouts, and retries, allowing the test logic to remain clean and focused on validation."
+                           data-tech="Typically a wrapper around the `requests` library in Python, configured with base URLs and authentication tokens from the environment context.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-mockdata" data-source-ids="output-mockdata" class="smart-link text-sm">Dynamic Mock Data</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-response" data-target="input-response" class="smart-link text-sm"
+                            data-title="Data Flow: Live API Response"
+                            data-what="The raw HTTP response object received from the application server, including the status code, headers, and response body."
+                            data-why="This is the direct result of the system's behavior, providing the raw material for the Assertion Engine to validate against expectations."
+                            data-tech="A `requests.Response` object in Python.">
+                            Live API Response
+                        </span>
+                    </div>
+                </div>
+                 <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Assertion Engine
+                        <i class="info-btn"
+                           data-title="Assertion Engine"
+                           data-what="The validation component. It compares the actual API response against the expected outcomes defined in the `test_plan.yml`."
+                           data-why="This is where the final verdict (pass or fail) is determined. The AI enhancement allows it to go beyond simple checks, detecting subtle performance regressions or data anomalies that might indicate a deeper issue even if the functional test passes."
+                           data-tech="Uses standard `pytest` assertions (`assert response.status_code == 200`). The anomaly detection uses an unsupervised ML model (e.g., Isolation Forest) to flag unusual response times or payload sizes.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-response" data-source-ids="output-response" class="smart-link text-sm">Live API Response</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-results" data-target="input-results" class="smart-link text-sm"
+                            data-title="Data Flow: Test Results"
+                            data-what="A structured collection of test outcomes, including pass/fail status, execution time, error messages, and any performance anomalies detected."
+                            data-why="This raw result data is the input for the final Feedback stage, containing all the information needed to generate comprehensive reports and intelligent alerts."
+                            data-tech="Typically a JUnit XML file, which is a standard format understood by most CI/CD and reporting tools.">
+                            Test Results (Pass/Fail)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Stage 4: Feedback -->
+        <div class="stage-card rounded-xl shadow-lg p-5">
+            <h2 class="text-xl font-bold text-center text-indigo-700 border-b-2 border-indigo-200 pb-2">Stage 4: FEEDBACK</h2>
+             <div class="space-y-4 mt-4 flex-grow flex flex-col justify-between">
+                 <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                       <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5"></path></svg>
+                        Diff Engine
+                        <i class="info-btn"
+                           data-title="Diff Engine"
+                           data-what="A utility that compares the newly generated `test_plan.yml` against the version from the previous successful run."
+                           data-why="This provides immediate visibility into the impact of BRD changes. It answers the question 'What new features are we now testing, and which old tests have become obsolete?' This context is crucial for understanding test results."
+                           data-tech="Uses the `GitPython` library to programmatically access the file history and perform a `diff` operation, classifying changes into added, modified, or deleted test cases.">ⓘ</i>
+                    </h3>
+                     <div class="mt-3">
+                        <p class="data-label">Output Data</p>
+                        <span id="output-diff" data-target="input-diff" class="smart-link text-sm"
+                            data-title="Data Flow: Change Analysis"
+                            data-what="A summary report detailing which tests were added, modified, or removed since the last run."
+                            data-why="This report provides essential context to the final test report. A failed test that was recently modified is more significant than a consistently failing legacy test."
+                            data-tech="A simple JSON object, e.g., `{ 'added': [...], 'removed': [...] }`.">
+                            Change Analysis Report
+                        </span>
+                     </div>
+                </div>
+                 <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Report Generator
+                        <i class="info-btn"
+                           data-title="Report Generator"
+                           data-what="Aggregates all data—test results, change analysis, and AI-driven failure triage—into a single, comprehensive report."
+                           data-why="This component translates raw data into actionable insights. Instead of just showing what failed, the AI-powered version explains *why* it likely failed, dramatically reducing the time developers spend on debugging."
+                           data-tech="Merges JUnit XML results with the diff report. For triage, it uses text embedding models (`BERT`) and clustering algorithms (`DBSCAN`) on failure logs to group similar errors. An LLM is then used to summarize each cluster's root cause.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-results" data-source-ids="output-results" class="smart-link text-sm">Test Results &</span><br>
+                         <span id="input-diff" data-source-ids="output-diff" class="smart-link text-sm">Change Report</span>
+                         <p class="data-label">Output Data</p>
+                         <span id="output-report" data-target="input-report" class="smart-link text-sm"
+                            data-title="Data Flow: Intelligent Report"
+                            data-what="A rich report object containing test results enriched with context about test changes and AI-predicted root causes for failures."
+                            data-why="This is the final, value-added product of the pipeline, designed to be consumed by the notification service to provide the most actionable feedback possible."
+                            data-tech="A JSON object ready for templating, containing all aggregated data.">
+                            Comprehensive Report
+                        </span>
+                    </div>
+                </div>
+                 <div class="component-card bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-bold text-lg text-gray-800 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        Notification Service
+                        <i class="info-btn"
+                           data-title="Notification Service"
+                           data-what="The final communication layer. It consumes the intelligent report and pushes concise, context-aware alerts to stakeholders in real-time."
+                           data-why="This ensures that the right information gets to the right people immediately. Smart notifications prevent alert fatigue by providing clear, actionable summaries, allowing teams to react to issues faster and more effectively."
+                           data-tech="Uses official SDKs (`slack_sdk`) and a templating engine (`Jinja2`) to create rich messages. It also uses the APIs of reporting tools like `Allure` or `ReportPortal` to push detailed results for historical tracking.">ⓘ</i>
+                    </h3>
+                    <div class="mt-3">
+                         <p class="data-label">Input Data</p>
+                         <span id="input-report" data-source-ids="output-report" class="smart-link text-sm">Comprehensive Report</span>
+                         <p class="data-label">Final Output</p>
+                         <span class="text-sm font-medium text-gray-900">💬 Slack/Teams Alert</span><br>
+                         <span class="text-sm font-medium text-gray-900">📈 Updated Dashboard</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <h2 id="modal-title" class="text-2xl font-bold text-gray-800 mb-4"></h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-semibold text-lg text-indigo-700">What it is:</h3>
+                    <p id="modal-what" class="text-gray-600"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg text-indigo-700">Why it's important:</h3>
+                    <p id="modal-why" class="text-gray-600"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg text-indigo-700">Technical Details:</h3>
+                    <p id="modal-tech" class="text-gray-600 text-sm bg-gray-50 p-3 rounded-lg"></p>
+                </div>
+            </div>
+            <div id="modal-close-btn" class="modal-close">&times;</div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Data for the weekly timeline
+            const weeklyPlan = [
+                // Month 1
+                { id: 1, title: 'Project Kickoff & Scaffolding', devDep: 'Access to BRD, initial API specs, and key stakeholders.', deliverable: 'Git repo, CI/CD pipeline skeleton, project documentation.', verification: 'Successful "Hello World" build in CI. Project plan reviewed and approved.', metricsImpact: 'N/A' },
+                { id: 2, title: 'Core Ingestion Logic', devDep: 'Finalized OpenAPI v1 spec for core services (Proposal, Triage).', deliverable: 'Functional parsers for PDF (BRD) and YAML (API Spec) files.', verification: 'Script successfully parses BRD and API spec, outputting a structured JSON object.', metricsImpact: 'N/A' },
+                { id: 3, title: 'API Test Framework Setup', devDep: 'Stable deployment of Proposal service in a test environment.', deliverable: 'Pytest framework established with API client and auth helpers.', verification: 'A single, hardcoded API test against the Proposal service passes successfully.', metricsImpact: 'N/A' },
+                { id: 4, title: 'First API & Contract Tests', devDep: 'Stable deployment of PAS integration endpoint.', deliverable: 'Automated API tests for Proposal Submission & Pre-Admissibility Checks. First Pact contract test implemented.', verification: 'CI run shows 100% pass rate for new API tests. A deliberately broken change fails the Pact test, proving the gate works.', metricsImpact: 'API Test Pass Rate and Code Coverage charts populated. Build Status chart now reflects contract test failures.' },
+                // Month 2
+                { id: 5, title: 'Expand API Coverage (Triage & BRE)', devDep: 'Stable deployment of the Triage service and Business Rules Engine (BRE).', deliverable: 'API tests covering all routing scenarios (Green, Red, Amber channels).', verification: 'Tests successfully validate all decision table conditions for the Triage logic.', metricsImpact: 'API Test Coverage chart shows significant increase.' },
+                { id: 6, title: 'Security Scanning (SAST/DAST)', devDep: 'N/A', deliverable: 'Automated security scanning tools (e.g., OWASP ZAP) integrated into CI pipeline.', verification: 'A sample PR with a known vulnerability (e.g., SQL injection) is successfully blocked by the security scan.', metricsImpact: 'New chart: "Security Vulnerabilities Found" is created.' },
+                { id: 7, title: 'Test Data Management (TDM)', devDep: 'Schema definitions for all major data entities.', deliverable: 'Initial scripts for generating realistic, anonymized test data based on simple profiles.', verification: 'A generated data set is successfully used to run an existing API test.', metricsImpact: 'N/A' },
+                { id: 8, title: 'Static Code Analysis', devDep: 'N/A', deliverable: 'SonarQube quality gates are enabled in CI, enforcing standards on code complexity, duplication, and potential bugs.', verification: 'A PR with code exceeding complexity thresholds is blocked.', metricsImpact: 'New charts: "Code Smells" and "Technical Debt".' },
+                // Month 3
+                { id: 9, title: 'UI Framework Scaffolding', devDep: 'Stable deployment of the frontend application (Broker Portal).', deliverable: 'Cypress framework established with page objects for key application pages.', verification: 'A single, hardcoded UI test that logs into the portal passes.', metricsImpact: 'N/A' },
+                { id: 10, title: 'First E2E UI Scenario', devDep: 'End-to-end functionality for a Broker to submit a proposal is deployed and stable.', deliverable: 'One critical persona-based E2E scenario is fully automated.', verification: 'The E2E test runs successfully in CI (nightly build) without flakiness.', metricsImpact: 'New chart: "E2E Test Pass Rate".' },
+                { id: 11, title: 'Performance Baselines', devDep: 'A dedicated, production-like performance testing environment.', deliverable: 'k6/JMeter scripts for key APIs are created. Initial baseline performance metrics are captured.', verification: 'A baseline performance report is generated and reviewed.', metricsImpact: 'New chart: "API Response Time (p95)".' },
+                { id: 12, title: 'Quality Dashboard V1', devDep: 'N/A', deliverable: 'A live Grafana dashboard showing API pass rates, code coverage, and build times.', verification: 'Dashboard accurately reflects the results from the last CI run.', metricsImpact: 'Centralizes all existing metrics into a single view.' },
+                // Month 4
+                { id: 13, title: 'Expand UI Coverage (Happy Paths)', devDep: 'Stable E2E deployment for Underwriter and Doctor personas.', deliverable: 'UI tests for critical happy paths (e.g., Underwriter approves a case, Doctor submits MER).', verification: 'All new E2E tests pass reliably in the nightly build.', metricsImpact: 'E2E Test Coverage chart created and populated.' },
+                { id: 14, title: 'Automate ABAC Security Tests', devDep: 'All user roles (Broker, UW Head, Doctor) are implemented with JWT scopes/claims.', deliverable: 'API and UI tests that assert role-based access rules are working as intended.', verification: 'A test logging in as a Broker fails with a 403 Forbidden error if it attempts to access medical details API.', metricsImpact: 'New chart: "Security Test Coverage".' },
+                { id: 15, title: 'Shift-Right: Synthetic Monitoring', devDep: 'Production endpoints are live and accessible.', deliverable: 'Basic synthetic "health check" tests are running against the production environment for critical APIs.', verification: 'A PagerDuty/OpsGenie alert is successfully triggered when a health check fails.', metricsImpact: 'New chart: "Production Uptime/Availability".' },
+                { id: 16, title: 'Performance Gating in CI', devDep: 'N/A', deliverable: 'Performance tests are integrated into the CI pipeline to automatically fail builds if a performance SLA is breached.', verification: 'A PR that introduces a slow DB query is blocked by the performance gate.', metricsImpact: 'New chart: "Performance Regression" is now active.' },
+                // Month 5
+                { id: 17, title: 'Orchestration Engine E2E V1', devDep: 'All core services are stable.', deliverable: 'First full, automated run of the BRD-to-Test pipeline (Ingestion -> Analysis -> Execution).', verification: 'A minor change in the BRD text successfully triggers a new test run with a modified test case.', metricsImpact: 'New Metric: "Automation Generation Rate".' },
+                { id: 18, title: 'AI Gherkin Generation', devDep: 'N/A', deliverable: 'The Requirement Extractor component is enhanced with an LLM to auto-generate Gherkin scenarios from BRD text.', poc: 'Fine-tune a model (e.g., Gemini) for higher accuracy on domain-specific BRD language vs. using a generic model.', verification: 'The engine correctly generates a BDD scenario for a new rule added to the BRD.', metricsImpact: 'Improves "Time to Create New Tests".' },
+                { id: 19, title: 'Visual Regression Testing', devDep: 'Stable UI components for all key pages.', deliverable: 'Visual regression testing (e.g., Percy) is integrated into the UI test suite.', verification: 'A PR with an unintended CSS change is flagged with a visual diff.', metricsImpact: 'New metric: "Visual Defects Caught".' },
+                { id: 20, title: 'UAT Planning & Execution', devDep: 'A stable, near-production UAT environment.', deliverable: 'Formal UAT sessions are conducted with business stakeholders.', verification: 'UAT sign-off is achieved from business teams.', metricsImpact: '"User Acceptance Defects" chart is populated.' },
+                // Month 6
+                { id: 21, title: 'Shift-Right: Chaos Engineering', devDep: 'Resiliency patterns (e.g., retries, circuit breakers) implemented in key services.', deliverable: 'First controlled Chaos experiment in staging (e.g., inject latency into CIBIL API).', verification: 'The system gracefully handles the induced failure and recovers as expected, without cascading failures.', metricsImpact: 'New metric: "System Resilience Score".' },
+                { id: 22, title: 'Advanced Analytics & Feedback Loop', devDep: 'Production log streaming to an analysis platform (e.g., ELK stack, Datadog).', deliverable: 'Quality Dashboard enhanced with Shift-Right metrics (MTTR, production error rates).', verification: 'A production incident\'s MTTR is accurately reflected on the dashboard.', metricsImpact: 'All dashboard charts are now comprehensive.' },
+                { id: 23, title: 'Quality Champions Program', devDep: 'N/A', deliverable: 'Launch the "Quality Champions" program, embedding QE mentors within development teams.', verification: 'First "Quality Champion" office hours session is held and receives positive feedback.', metricsImpact: 'Cultural metric, expected to lower Defect Density over the long term.' },
+                { id: 24, title: 'Retrospective & Handoff', devDep: 'N/A', deliverable: 'V1 of the Orchestration Engine is fully documented. A project retrospective is held, and a future roadmap is drafted.', verification: 'All artifacts are signed off and archived. A Q2 quality roadmap is presented to leadership.', metricsImpact: 'Final V1 report on all established metrics is presented.' }
+            ];
+            
+            const timelineContainer = document.getElementById('weekly-timeline-container');
+            if(timelineContainer){
+                weeklyPlan.forEach(week => {
+                    const weekEl = document.createElement('div');
+                    weekEl.className = 'timeline-milestone';
+                    let devDepHtml = `<li><strong>Dependency from Dev:</strong> ${week.devDep}</li>`;
+                    let verificationHtml = `<li><strong>Verification:</strong> ${week.verification}</li>`;
+                    let metricsHtml = `<li><strong>Metrics Impact:</strong> ${week.metricsImpact}</li>`;
+
+                    weekEl.innerHTML = `
+                        <strong class="text-gray-900">Week ${week.id}: ${week.title}</strong>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-600">
+                            <li><strong>QE Deliverable:</strong> ${week.deliverable}</li>
+                            ${devDepHtml}
+                            ${verificationHtml}
+                            ${metricsHtml}
+                        </ul>
+                    `;
+                    timelineContainer.appendChild(weekEl);
+                });
+            }
+
+            const links = document.querySelectorAll('.smart-link');
+            const infoBtns = document.querySelectorAll('.info-btn');
+            const modal = document.getElementById('info-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalWhat = document.getElementById('modal-what');
+            const modalWhy = document.getElementById('modal-why');
+            const modalTech = document.getElementById('modal-tech');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            let allLines = [];
+            const repositionLines = () => allLines.forEach(l => l.line.position());
+
+            function drawAllLines() {
+                allLines.forEach(l => l.line.remove());
+                allLines = [];
+                const sources = document.querySelectorAll('.smart-link[data-target]');
+                sources.forEach(source => {
+                    const targetIds = source.dataset.target.split(' ');
+                    targetIds.forEach(targetId => {
+                        const target = document.getElementById(targetId);
+                        if (source && target) {
+                            const line = new LeaderLine(source, target, {
+                                color: 'rgba(107, 114, 128, 0.4)',
+                                size: 2, path: 'fluid', endPlug: 'arrow1',
+                                startSocket: 'right', endSocket: 'left'
+                            });
+                            allLines.push({ line, source, target });
+                        }
+                    });
+                });
+            }
+
+            function resetHighlights() {
+                links.forEach(l => l.classList.remove('highlight'));
+                allLines.forEach(l => {
+                    l.line.setOptions({ color: 'rgba(107, 114, 128, 0.4)', size: 2, dash: false, zIndex: 5 });
+                });
+            }
+
+            function openModal(data) {
+                if (!modal || !data) return;
+                modalTitle.textContent = data.title || '';
+                modalWhat.textContent = data.what || '';
+                modalWhy.textContent = data.why || '';
+                modalTech.textContent = data.tech || '';
+                modal.classList.add('visible');
+            }
+
+            function closeModal() {
+                if (modal) modal.classList.remove('visible');
+            }
+
+            setTimeout(drawAllLines, 100);
+
+            infoBtns.forEach(btn => {
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openModal(event.currentTarget.dataset);
+                });
+            });
+
+            links.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    resetHighlights();
+                    
+                    const clickedElement = event.currentTarget;
+                    const elementsToHighlight = new Set();
+                    const linesToHighlight = new Set();
+
+                    function tracePath(el) {
+                        if (!el || elementsToHighlight.has(el)) return;
+                        elementsToHighlight.add(el);
+                        if (el.dataset.sourceIds) {
+                            el.dataset.sourceIds.split(' ').forEach(id => tracePath(document.getElementById(id)));
+                        }
+                        if (el.dataset.target) {
+                            el.dataset.target.split(' ').forEach(id => tracePath(document.getElementById(id)));
+                        }
+                    }
+
+                    tracePath(clickedElement);
+                    
+                    allLines.forEach(l => {
+                       if (elementsToHighlight.has(l.source) && elementsToHighlight.has(l.target)) {
+                           linesToHighlight.add(l.line);
+                       }
+                    });
+
+                    elementsToHighlight.forEach(el => el && el.classList.add('highlight'));
+                    linesToHighlight.forEach(line => {
+                        line.setOptions({ color: '#4f46e5', size: 3.5, dash: { animation: true }, zIndex: 100 });
+                        line.position();
+                    });
+
+                    if(clickedElement.dataset.title) {
+                        openModal(clickedElement.dataset);
+                    }
+                });
+            });
+
+            document.body.addEventListener('click', () => {
+                 resetHighlights();
+                 closeModal();
+            });
+            
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', closeModal);
+            }
+
+            if (modal) {
+                const modalContent = modal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                    });
+                }
+            }
+
+            const toggleBtns = document.querySelectorAll('.collapsible-toggle');
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = document.getElementById(btn.dataset.target);
+                    const icon = document.getElementById(btn.dataset.icon);
+                    if (content && icon) {
+                        const isHidden = content.classList.contains('hidden');
+                        if (isHidden) {
+                            content.classList.remove('hidden');
+                            icon.style.transform = 'rotate(90deg)';
+                        } else {
+                            content.classList.add('hidden');
+                            icon.style.transform = 'rotate(0deg)';
+                        }
+                        setTimeout(repositionLines, 300);
+                    }
+                });
+            });
+            
+            window.addEventListener('scroll', repositionLines, true);
+            window.addEventListener('resize', drawAllLines, true);
+        });
+    </script>
+</body>
+</html>
+
