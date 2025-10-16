@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Artha: Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Infographic Narrative Plan: The infographic tells the story of Project Artha from top to bottom. It starts with a bold hook stating the problem and the massive market opportunity. It then presents the solution through a simple, 4-step user journey visualization. The narrative continues by explaining the ecosystem and the transparent financial model using a donut chart. It details the regulatory hurdles and solutions, provides international precedent, highlights key features in a card layout, quantifies the market opportunity with a bar chart, explains the AI-driven security with a line chart, and concludes with a forward-looking statement. This linear flow is designed for easy comprehension and maximum impact. -->
+    <!-- Visualization Choices: 
+        - **Key Metric:** Data Point -> Market Size. Goal -> Inform. Viz -> Large Number Text. Justification -> High-impact hook to grab attention. Library -> HTML/CSS.
+        - **Process Flow:** Data Point -> User Journey. Goal -> Organize. Viz -> Flowchart. Justification -> Simplifies a complex process into four understandable steps. Library/Method -> Structured HTML/CSS with Tailwind (NO SVG).
+        - **Financial Breakdown:** Data Point -> Profit Sharing Model. Goal -> Compare/Inform. Viz -> Donut Chart. Justification -> Instantly shows the composition of profit distribution, emphasizing transparency. Library -> Chart.js (Canvas).
+        - **Market Opportunity:** Data Point -> Current vs. Potential Market. Goal -> Compare. Viz -> Bar Chart. Justification -> Clearly visualizes the growth potential that Project Artha unlocks. Library -> Chart.js (Canvas).
+        - **Fraud Detection:** Data Point -> AI-based security. Goal -> Relationships. Viz -> Line Chart. Justification -> Effectively demonstrates the concept of anomaly detection by contrasting normal and fraudulent patterns. Library -> Chart.js (Canvas).
+     -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F2F2F2;
+            color: #1a202c;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #004FFF, #FF6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .kpi-card {
+            background-color: #F7F7FF;
+            border: 1px solid #E2E2FF;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            padding-bottom: 2rem;
+            border-left: 2px solid #E2E2FF;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.5rem;
+            top: 0.25rem;
+            height: 1rem;
+            width: 1rem;
+            background-color: #004FFF;
+            border-radius: 9999px;
+            border: 2px solid white;
+        }
+        .regulatory-box {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .regulatory-box .icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-4xl mx-auto p-4 md:p-8 space-y-16">
+
+        <header class="text-center py-8">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">Project <span class="gradient-text">Artha</span></h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">Unlocking Professional Wealth Management for India's Next Generation of Retail Investors.</p>
+        </header>
+
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">The Trillion-Dollar Gap in Indian Finance</h2>
+            <p class="text-center text-gray-600 mb-6">Millions of retail investors lack access to bespoke financial advice, facing high entry barriers to professional portfolio management. Project Artha is precision-engineered to capture this underserved market.</p>
+            <div class="grid md:grid-cols-3 gap-4 text-center">
+                <div class="kpi-card">
+                    <p class="text-4xl font-extrabold text-blue-600">80M+</p>
+                    <p class="font-semibold text-blue-800 mt-1">Total Addressable Market</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="text-4xl font-extrabold text-blue-600">50,000+</p>
+                    <p class="font-semibold text-blue-800 mt-1">Investors Onboarded (Year 1)</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="text-4xl font-extrabold text-blue-600">500+</p>
+                    <p class="font-semibold text-blue-800 mt-1">Advisors Onboarded (Year 1)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">The 4-Step Journey to Democratized Investing</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start text-center">
+                 <div class="flex flex-col items-center">
+                    <div class="bg-orange-100 text-orange-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold border-4 border-white shadow-md">1</div>
+                    <h3 class="font-bold mt-4 mb-2">Discover Advisors</h3>
+                    <p class="text-sm text-gray-600 px-2">Investors browse and select from a curated list of SEBI-verified financial advisors based on strategy and performance.</p>
+                </div>
+                <div class="hidden md:flex items-center justify-center mt-8 text-4xl text-gray-300">→</div>
+                <div class="flex flex-col items-center mt-4 md:mt-0">
+                    <div class="bg-orange-100 text-orange-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold border-4 border-white shadow-md">2</div>
+                    <h3 class="font-bold mt-4 mb-2">Join Investment Pool</h3>
+                    <p class="text-sm text-gray-600 px-2">With transparent disclosure of terms, risks, and fees, investors join a pool that aligns with their financial goals.</p>
+                </div>
+                 <div class="hidden md:flex items-center justify-center mt-8 text-4xl text-gray-300">→</div>
+                 <div class="flex flex-col items-center mt-4 md:mt-0">
+                    <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold border-4 border-white shadow-md">3</div>
+                    <h3 class="font-bold mt-4 mb-2">Expert Management</h3>
+                    <p class="text-sm text-gray-600 px-2">The advisor actively manages the pool's assets, making trades and strategic decisions on behalf of all investors in the pool.</p>
+                </div>
+                 <div class="hidden md:flex items-center justify-center mt-8 text-4xl text-gray-300">→</div>
+                 <div class="flex flex-col items-center mt-4 md:mt-0">
+                    <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold border-4 border-white shadow-md">4</div>
+                    <h3 class="font-bold mt-4 mb-2">Share The Profits</h3>
+                    <p class="text-sm text-gray-600 px-2">Profits are automatically calculated and distributed according to a pre-agreed formula, ensuring full transparency.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Radical Transparency: The Financial Model</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">Every rupee of profit is accounted for by the platform. This model aligns advisor interests with investor success through a transparent, performance-based fee structure.</p>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="chart-container">
+                    <canvas id="profitDonutChart"></canvas>
+                </div>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-50 rounded-lg border">
+                        <h4 class="font-bold text-gray-800">Performance-Based Fees</h4>
+                        <p class="text-sm text-gray-600">Advisors are rewarded for generating actual profits, ensuring their goals are perfectly aligned with the investors' goals.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg border">
+                        <h4 class="font-bold text-gray-800">Automated & Impartial</h4>
+                        <p class="text-sm text-gray-600">The platform acts as a neutral third-party, automatically calculating and distributing all fees and profits to prevent conflicts of interest.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Navigating Regulation: Hurdles & Artha's Solutions</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">Project Artha redefines compliance by leveraging technology to uphold the *spirit* of SEBI regulations, rather than being constrained by the *letter* of outdated rules. We propose a collaborative path through a regulatory sandbox.</p>
+            <div class="space-y-6">
+                <div class="regulatory-box bg-red-50 border-red-200">
+                    <div class="icon text-red-600">🚨</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-red-800">Hurdle 1: Collective Investment Scheme (CIS) Regulations</h3>
+                        <p class="text-sm text-gray-700 mt-1">Current CIS rules impose heavy compliance costs (₹50 Cr net worth, trustee appointment) designed for large funds, making smaller advisor-led pools unviable. This is a barrier to entry for democratized wealth management.</p>
+                        <h4 class="font-bold text-green-700 mt-3">Artha's Solution: Digital Trustee & Real-Time Transparency</h4>
+                        <p class="text-sm text-gray-700">The platform acts as a **Digital Trustee**, using segregated digital accounts and immutable audit trails for asset segregation and granular reporting. Real-time dashboards replace static prospectuses, offering superior, continuous investor disclosure.</p>
+                    </div>
+                </div>
+                <div class="regulatory-box bg-orange-50 border-orange-200">
+                    <div class="icon text-orange-600">⚖️</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-orange-800">Hurdle 2: Investment Advisor (IA) Fee Structure</h3>
+                        <p class="text-sm text-gray-700 mt-1">SEBI caps IA fees and heavily restricts performance-based compensation to prevent conflicts of interest and mis-selling. This limits aligned incentives crucial for a dynamic, results-driven model.</p>
+                        <h4 class="font-bold text-green-700 mt-3">Artha's Solution: Platform-Enforced Smart Contracts</h4>
+                        <p class="text-sm text-gray-700">Fees are calculated and distributed automatically by the **impartial platform** based on pre-agreed terms and *net profits*. This 'smart contract' model removes the advisor's ability to manipulate compensation, ensuring perfect alignment of interests.</p>
+                    </div>
+                </div>
+                <div class="regulatory-box bg-purple-50 border-purple-200">
+                    <div class="icon text-purple-600">🔗</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-purple-800">Hurdle 3: Segregation of Advisory & Execution Roles</h3>
+                        <p class="text-sm text-gray-700 mt-1">Regulations strictly separate advising from trade execution to ensure impartial advice, preventing brokers from influencing advice for commissions. The ALP model, where advisors also manage trades, appears to blur these lines.</p>
+                        <h4 class="font-bold text-green-700 mt-3">Artha's Solution: Advisor as Strategist, Platform as Fiduciary Executor</h4>
+                        <p class="text-sm text-gray-700">The advisor's role is purely strategic and managerial. The **platform acts as the Fiduciary Executor**, executing trades based on the advisor's instructions within the constraints of the pool's disclosed strategy. This tech-mediated separation maintains the purity of advice.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Global Precedent: Learning from International Models</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">While revolutionary for India, the core concept behind Project Artha is proven viable in major international markets. These successful models demonstrate that with the right tech framework, advisor-led retail investment is safe, transparent, and scalable.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-3">🇪🇺 / 🇬🇧 Social & Copy Trading</h3>
+                    <div>
+                        <p class="font-semibold text-gray-700">Regulators: FCA (UK), ESMA (Europe)</p>
+                        <p class="text-sm text-gray-600 mt-2">Platforms like eToro allow retail investors to automatically "copy" the trades of vetted, experienced traders. The platform acts as the technology intermediary, executing trades in users' segregated accounts. This is regulated under portfolio management directives (MiFID II), requiring extreme transparency on risk and performance.</p>
+                        <p class="mt-3 font-bold text-sm text-blue-900">Key Takeaway: Technology-driven transparency and robust risk disclosure are paramount.</p>
+                    </div>
+                </div>
+                <div class="p-6 bg-green-50 border border-green-200 rounded-lg">
+                     <h3 class="text-xl font-bold text-green-800 mb-4 flex items-center gap-3">🇺🇸 / 🇦🇺 Democratized Managed Accounts</h3>
+                     <div>
+                        <p class="font-semibold text-gray-700">Regulators: SEC (USA), ASIC (Australia)</p>
+                        <p class="text-sm text-gray-600 mt-2">Fintech platforms offer fractional access to Separately Managed Accounts (SMAs) or Managed Discretionary Accounts (MDAs). An advisor manages a model portfolio, and technology replicates it at scale across thousands of smaller, individual retail accounts, a practice once reserved for the ultra-wealthy.</p>
+                        <p class="mt-3 font-bold text-sm text-green-900">Key Takeaway: Technology can efficiently scale professional management to any account size.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Unlocking a New Market Segment</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">By making professional advice accessible, Project Artha is projected to more than double the addressable Assets Under Management (AUM) for our platform.</p>
+            <div class="chart-container">
+                <canvas id="marketBarChart"></canvas>
+            </div>
+        </section>
+        
+        <section class="section-card p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Security by Design: AI-Powered Oversight</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">Our AI engine continuously monitors trading patterns, establishing a baseline for each advisor and automatically flagging anomalous activity with over 95% accuracy.</p>
+            <div class="chart-container">
+                <canvas id="securityLineChart"></canvas>
+            </div>
+        </section>
+
+        <section class="section-card p-8">
+             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Built on a Scalable, Enterprise-Grade Stack</h2>
+             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                 <div class="p-4 bg-gray-50 rounded-lg">
+                     <h3 class="font-bold text-lg">Frontend</h3>
+                     <p class="text-sm text-gray-600">React & Next.js</p>
+                 </div>
+                 <div class="p-4 bg-gray-50 rounded-lg">
+                     <h3 class="font-bold text-lg">Backend</h3>
+                     <p class="text-sm text-gray-600">Node.js & Python</p>
+                 </div>
+                 <div class="p-4 bg-gray-50 rounded-lg">
+                     <h3 class="font-bold text-lg">Database</h3>
+                     <p class="text-sm text-gray-600">PostgreSQL</p>
+                 </div>
+                 <div class="p-4 bg-gray-50 rounded-lg">
+                     <h3 class="font-bold text-lg">Infrastructure</h3>
+                     <p class="text-sm text-gray-600">Kubernetes & AWS</p>
+                 </div>
+             </div>
+        </section>
+
+        <section class="section-card p-8">
+             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Phased Rollout for Maximum Impact</h2>
+            <div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <p class="text-sm font-semibold text-blue-600">Months 1-3</p>
+                    <h4 class="font-bold">MVP Development</h4>
+                    <p class="text-sm text-gray-600">Core functionality: Advisor onboarding, pool creation, and basic trading.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <p class="text-sm font-semibold text-blue-600">Month 4</p>
+                    <h4 class="font-bold">Regulatory Sandbox Application</h4>
+                    <p class="text-sm text-gray-600">Submit a formal, data-backed proposal to SEBI for a controlled beta test.</p>
+                </div>
+                <div class="timeline-item">
+                     <div class="timeline-dot"></div>
+                    <p class="text-sm font-semibold text-blue-600">Months 5-6</p>
+                    <h4 class="font-bold">AI Engine Integration</h4>
+                    <p class="text-sm text-gray-600">Deploy and calibrate the real-time fraud and anomaly detection system.</p>
+                </div>
+                 <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <p class="text-sm font-semibold text-blue-600">Month 7+</p>
+                    <h4 class="font-bold">Sandbox Launch & Public Rollout</h4>
+                    <p class="text-sm text-gray-600">Begin controlled launch, gather data, and prepare for wider public release upon approval.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center py-8">
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">The Future is <span class="gradient-text">Collaborative</span>.</h2>
+            <p class="text-gray-600">Project Artha is more than a feature; it's a new paradigm for wealth creation in India.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const chartTooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+
+            const profitDonutCtx = document.getElementById('profitDonutChart').getContext('2d');
+            new Chart(profitDonutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Investor Net Profit', 'Advisor Performance Fee', 'Platform Fee', 'Est. Capital Gains Tax'],
+                    datasets: [{
+                        label: 'Profit Distribution',
+                        data: [6630, 2000, 200, 1170],
+                        backgroundColor: ['#004FFF', '#FF6600', '#B5B9FF', '#FF9D57'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Sample Distribution of ₹10,000 Gross Profit'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: chartTooltipTitleCallback,
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const marketBarCtx = document.getElementById('marketBarChart').getContext('2d');
+            new Chart(marketBarCtx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Current Platform Managed Assets', 
+                        ['Potential Market with', 'Project Artha Feature']
+                    ],
+                    datasets: [{
+                        label: 'Assets Under Management (in ₹ Cr)',
+                        data: [15000, 40000],
+                        backgroundColor: ['#B5B9FF', '#004FFF'],
+                        borderRadius: 8,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Projected AUM Growth' },
+                        tooltip: {
+                            callbacks: {
+                                title: chartTooltipTitleCallback,
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                        label += new Intl.NumberFormat('en-IN').format(context.parsed.x) + ' Cr';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return (value / 1000) + 'k Cr';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const securityLineCtx = document.getElementById('securityLineChart').getContext('2d');
+            new Chart(securityLineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
+                    datasets: [{
+                        label: 'Normal Trading Volume',
+                        data: [120, 150, 180, 160, 200, 210, 230, 220],
+                        borderColor: '#004FFF',
+                        backgroundColor: 'rgba(0, 79, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Anomalous Activity Detected',
+                        data: [130, 140, 190, 850, 180, 200, 190, 210],
+                        borderColor: '#FF6600',
+                        backgroundColor: 'rgba(255, 102, 0, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'AI Anomaly Detection' },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: { title: chartTooltipTitleCallback }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
+

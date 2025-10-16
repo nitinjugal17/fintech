@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Artha: Advisor-Led Investment Pools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Fintech Calm -->
+    <!-- Application Structure Plan: The application is designed as a single-page, multi-section interactive report to explore the concept of Advisor-Led Investment Pools. A vertical navigation bar allows users to jump between thematic sections: 1. Vision, 2. Ecosystem, 3. Tech Stack, 4. Regulatory Framework, and 5. Fraud Detection. This non-linear, thematic structure was chosen because the source material is a conceptual proposal, not a linear data report. It allows users to explore facets of the idea in any order, facilitating better understanding and synthesis. Key interactions include an interactive ecosystem diagram, a dynamic profit-sharing calculator, and a chart that simulates fraud detection, making abstract concepts tangible and engaging for the user. -->
+    <!-- Visualization & Content Choices: 
+        - **Ecosystem Flow:** Report Info -> Relationship between actors (Advisor, Investor, Platform, Regulator). Goal -> Organize/Relationships. Viz Method -> Interactive diagram built with HTML/Tailwind. Interaction -> Hover/click on nodes to reveal details. Justification -> Visually clarifies complex interactions better than text. Library/Method -> HTML/CSS.
+        - **Profit & Fee Calculation:** Report Info -> Profit sharing, fees, taxes. Goal -> Inform/Compare. Viz Method -> Interactive calculator with sliders/inputs. Interaction -> User inputs investment/profit, sees a breakdown of returns. Justification -> Makes the financial model concrete and easy to understand. Library/Method -> HTML/JS.
+        - **Fraud Pattern Analysis:** Report Info -> Automated fraud detection. Goal -> Analyze/Relationships. Viz Method -> Dynamic line chart showing transaction patterns. Interaction -> Toggle buttons to show 'Normal' vs. 'Anomalous' patterns, highlighting spikes and unusual activity. Justification -> Visually demonstrates the core concept of pattern-based fraud detection. Library/Method -> Chart.js (Canvas).
+        - **Tech Stack:** Report Info -> Implementation with existing tech. Goal -> Organize/Viz Method -> Card-based layout. Interaction -> Static display. Justification -> Clean, modern way to present technical components. Library/Method -> HTML/CSS.
+     -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            background-color: #e9ecef;
+            color: #007bff;
+            transform: translateX(4px);
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .actor-node {
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .actor-node:hover, .actor-node.active {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+            transform: scale(1.05);
+        }
+        .flow-arrow {
+            color: #adb5bd;
+            font-size: 2rem;
+            line-height: 1;
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #f1f3f5;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2.5rem;
+            border-left: 2px solid #dee2e6;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.7rem;
+            top: 0;
+            height: 1.25rem;
+            width: 1.25rem;
+            background-color: white;
+            border: 2px solid #007bff;
+            border-radius: 9999px;
+        }
+        .timeline-item.completed .timeline-dot {
+             background-color: #007bff;
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row">
+
+    <nav id="navbar" class="w-full md:w-64 bg-white shadow-lg md:h-screen md:sticky top-0 p-4">
+        <div class="text-2xl font-bold text-gray-800 mb-8 border-b pb-4">Project <span class="text-blue-600">Artha</span></div>
+        <ul class="space-y-2">
+            <li><a href="#project-overview" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg active">Project Overview</a></li>
+            <li><a href="#stakeholder-map" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg">Stakeholder Map</a></li>
+            <li><a href="#tech-architecture" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg">Tech & Timeline</a></li>
+            <li><a href="#financial-compliance" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg">Financial & Compliance</a></li>
+            <li><a href="#regulatory-hurdles" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg">Regulatory Hurdles</a></li>
+            <li><a href="#risk-mitigation" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg">Risk Mitigation</a></li>
+            <li><a href="#project-roadmap" class="nav-link block font-medium text-gray-600 py-2 px-4 rounded-lg">Roadmap & KPIs</a></li>
+        </ul>
+    </nav>
+
+    <main class="flex-1 p-6 md:p-10 space-y-12">
+
+        <section id="project-overview" class="section-card p-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Project Artha: Overview & Business Case</h1>
+            <p class="text-lg text-gray-600 mb-8">This document outlines the project plan for "Project Artha," a new platform feature enabling SEBI-certified advisors to create and manage investment pools for retail investors. The project's primary objective is to develop a secure, transparent, and compliant ecosystem that captures a new market segment and enhances user engagement. The business case is predicated on democratizing access to expert financial management, thereby increasing platform transaction volume and assets under management (AUM).</p>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Core Project Objectives & Success Metrics:</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                    <h4 class="text-lg font-bold text-blue-800 mb-2">Objective 1: Regulatory Compliance</h4>
+                    <p class="text-blue-700 mb-3">Build a platform that achieves 100% adherence to all SEBI guidelines for investment advisors and collective investment schemes.</p>
+                    <p class="text-sm font-semibold text-blue-900">KPI: Zero compliance infractions in biannual audits.</p>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                    <h4 class="text-lg font-bold text-green-800 mb-2">Objective 2: Market Adoption</h4>
+                    <p class="text-green-700 mb-3">Achieve significant uptake from both certified advisors and retail investors within the first year of launch.</p>
+                    <p class="text-sm font-semibold text-green-900">KPI: Onboard 500+ advisors and 50,000+ investors in Year 1.</p>
+                </div>
+                <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                    <h4 class="text-lg font-bold text-yellow-800 mb-2">Objective 3: System Security</h4>
+                    <p class="text-yellow-700 mb-3">Implement a robust, AI-driven fraud detection system to ensure the integrity of all transactions and protect user assets.</p>
+                    <p class="text-sm font-semibold text-yellow-900">KPI: >95% accuracy in flagging anomalous transactions.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="stakeholder-map" class="section-card p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Stakeholder Map & User Flow</h2>
+             <p class="text-gray-600 mb-8">This project's success depends on balancing the needs and responsibilities of four key stakeholder groups. The platform acts as the central facilitator for all interactions, ensuring a seamless flow of information and capital. The following infographic outlines the role of each stakeholder within the project's scope. Click to see their specific requirements and deliverables.</p>
+            <div class="flex flex-col md:flex-row items-center justify-around space-y-4 md:space-y-0 md:space-x-4 mb-8">
+                <div id="actor-advisor" class="actor-node p-4 rounded-lg text-center w-48">
+                    <div class="text-4xl mb-2">🧑‍💼</div><h4 class="font-bold">SEBI Advisor</h4><p class="text-xs text-gray-500">(User Persona 1)</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div id="actor-platform" class="actor-node p-4 rounded-lg text-center w-48">
+                    <div class="text-4xl mb-2">🏢</div><h4 class="font-bold">Trading Platform</h4><p class="text-xs text-gray-500">(Project Team)</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div id="actor-investor" class="actor-node p-4 rounded-lg text-center w-48">
+                    <div class="text-4xl mb-2">👨‍👩‍👧‍👦</div><h4 class="font-bold">Retail Investor</h4><p class="text-xs text-gray-500">(User Persona 2)</p>
+                </div>
+                 <div class="flow-arrow hidden md:block">→</div>
+                 <div class="flow-arrow md:hidden">↓</div>
+                <div id="actor-regulator" class="actor-node p-4 rounded-lg text-center w-48 mt-0 md:mt-0">
+                    <div class="text-4xl mb-2">🏛️</div><h4 class="font-bold">SEBI</h4><p class="text-xs text-gray-500">(Compliance Authority)</p>
+                </div>
+            </div>
+            <div id="ecosystem-details" class="bg-gray-50 p-6 rounded-lg min-h-[150px] border">
+                <h3 id="actor-name" class="text-xl font-bold text-gray-800 mb-2">Select a Stakeholder</h3>
+                <p id="actor-description" class="text-gray-700">Click a stakeholder node to view their role, project requirements, and key interactions.</p>
+            </div>
+        </section>
+
+        <section id="tech-architecture" class="section-card p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Technical Architecture & Implementation Timeline</h2>
+            <p class="text-gray-600 mb-8">The project will be executed in four distinct phases, starting with an MVP to validate the core concept and progressively adding features. The architecture is designed for scalability, security, and real-time performance, utilizing a microservices approach to ensure modularity and ease of maintenance.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Proposed Tech Stack</h3>
+                     <div class="grid grid-cols-2 gap-4">
+                        <div class="border p-4 rounded-lg bg-gray-50">
+                            <h4 class="font-semibold text-lg">Frontend</h4>
+                            <p class="text-sm">React/Next.js, Chart.js, Tailwind CSS</p>
+                        </div>
+                        <div class="border p-4 rounded-lg bg-gray-50">
+                            <h4 class="font-semibold text-lg">Backend</h4>
+                            <p class="text-sm">Node.js (NestJS), Python (Flask), gRPC</p>
+                        </div>
+                        <div class="border p-4 rounded-lg bg-gray-50">
+                            <h4 class="font-semibold text-lg">Database</h4>
+                            <p class="text-sm">PostgreSQL (Transactional), ClickHouse (Analytics)</p>
+                        </div>
+                        <div class="border p-4 rounded-lg bg-gray-50">
+                            <h4 class="font-semibold text-lg">DevOps & Infra</h4>
+                            <p class="text-sm">Docker, Kubernetes, AWS/GCP, Kafka</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Project Implementation Timeline</h3>
+                    <div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-dot"></div>
+                            <h4 class="font-bold">Phase 1: MVP Development (3 Months)</h4>
+                            <p class="text-sm text-gray-600">Core functionalities: Advisor onboarding, pool creation, investor joining, basic trade execution.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <h4 class="font-bold">Phase 2: Alpha/Beta Testing (1 Month)</h4>
+                            <p class="text-sm text-gray-600">Internal testing followed by a closed beta with a select group of advisors and investors.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <h4 class="font-bold">Phase 3: Fraud Engine Integration (2 Months)</h4>
+                            <p class="text-sm text-gray-600">Develop and integrate the AI/ML model for real-time transaction monitoring.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <h4 class="font-bold">Phase 4: Public Launch & Scaling (Ongoing)</h4>
+                            <p class="text-sm text-gray-600">Official launch, performance monitoring, and iterative feature enhancements based on user feedback.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="financial-compliance" class="section-card p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Financial Model & Compliance Blueprint</h2>
+            <p class="text-gray-600 mb-8">This section outlines the financial logic and the compliance framework integral to the project's design. The interactive calculator models the automated fee and tax structure, ensuring transparency. The expandable checklist below details the key SEBI regulations that the platform must adhere to.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                     <h3 class="text-xl font-bold mb-4">Profit-Sharing & Fee Calculator</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="initialInvestment" class="block text-sm font-medium text-gray-700">Initial Investment (₹)</label>
+                            <input type="range" id="initialInvestment" min="10000" max="1000000" step="10000" value="50000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center font-bold text-blue-600 mt-1">₹<span id="investmentValue">50,000</span></div>
+                        </div>
+                        <div>
+                            <label for="grossProfit" class="block text-sm font-medium text-gray-700">Gross Profit (%)</label>
+                            <input type="range" id="grossProfit" min="0" max="100" step="1" value="15" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center font-bold text-green-600 mt-1"><span id="profitValue">15</span>%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg border">
+                    <h3 class="text-xl font-bold mb-4">Automated Payout Calculation</h3>
+                    <div class="space-y-3 text-gray-800">
+                        <div class="flex justify-between"><span>Gross Profit:</span> <span class="font-bold" id="resultGrossProfit">₹7,500</span></div>
+                        <div class="flex justify-between border-t pt-2"><span>Advisor's Performance Fee (20%):</span> <span class="font-bold text-red-500" id="resultAdvisorShare">- ₹1,500</span></div>
+                        <div class="flex justify-between"><span>Platform Tech Fee (2%):</span> <span class="font-bold text-red-500" id="resultPlatformFee">- ₹150</span></div>
+                        <div class="flex justify-between"><span>Est. Capital Gains Tax (15%):</span> <span class="font-bold text-red-500" id="resultTax">- ₹877.50</span></div>
+                        <div class="flex justify-between text-lg font-bold border-t-2 pt-3 mt-2 text-green-600"><span>Investor Net Profit:</span> <span id="resultNetProfit">₹4,972.50</span></div>
+                        <div class="flex justify-between text-lg font-bold text-blue-800"><span>Final Portfolio Value:</span> <span id="resultTotalReturn">₹54,972.50</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-4">SEBI Compliance Checklist</h3>
+                <div class="border rounded-lg">
+                    <div class="accordion-item">
+                        <div class="accordion-header flex justify-between items-center p-4 border-b">
+                            <h4 class="font-semibold">Advisor Verification & Onboarding</h4>
+                            <span class="text-2xl font-light transform transition-transform duration-300">▼</span>
+                        </div>
+                        <div class="accordion-content p-4 bg-gray-50">
+                            <p class="text-sm text-gray-700">System must integrate with SEBI's registered advisor database via API to verify credentials. Onboarding process to include digital signing of platform's terms of service and compliance agreements. Annual re-verification process must be automated.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header flex justify-between items-center p-4 border-b">
+                            <h4 class="font-semibold">Investor KYC & Risk Profiling</h4>
+                             <span class="text-2xl font-light transform transition-transform duration-300">▼</span>
+                        </div>
+                         <div class="accordion-content p-4 bg-gray-50">
+                            <p class="text-sm text-gray-700">Standard e-KYC process to be implemented. A mandatory, standardized questionnaire must be completed by investors to determine their risk appetite. The system will prevent investors from joining pools rated above their risk profile.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header flex justify-between items-center p-4">
+                            <h4 class="font-semibold">Reporting & Audit Trails</h4>
+                             <span class="text-2xl font-light transform transition-transform duration-300">▼</span>
+                        </div>
+                        <div class="accordion-content p-4 bg-gray-50">
+                            <p class="text-sm text-gray-700">All trades, fund movements, and fee calculations must be logged immutably. The system must be capable of generating quarterly and annual reports for both investors and regulatory bodies on demand. Data retention policy must comply with SEBI's 7-year requirement.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="regulatory-hurdles" class="section-card p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Regulatory Hurdles & The Path Forward</h2>
+            <p class="text-gray-600 mb-8">Innovation often precedes regulation. Project Artha is designed to operate within a potential future-state regulatory framework. This analysis deconstructs current regulatory hurdles and proposes how technology-driven solutions can address the core principles behind these rules, justifying a re-evaluation.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-red-700 mb-4">Core Regulatory Hurdles (Current State)</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <h4 class="font-bold">1. Collective Investment Scheme (CIS) Regulations</h4>
+                            <p class="text-sm text-gray-700">Current CIS rules are designed for large-scale funds, imposing heavy compliance and structural costs that are prohibitive for smaller, more agile advisor-led pools.</p>
+                        </div>
+                         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <h4 class="font-bold">2. Investment Advisor (IA) Fee Structure</h4>
+                            <p class="text-sm text-gray-700">SEBI regulations cap the fees IAs can charge and place restrictions on performance-based fees to prevent conflicts of interest and mis-selling.</p>
+                        </div>
+                         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <h4 class="font-bold">3. Segregation of Advisory & Execution</h4>
+                            <p class="text-sm text-gray-700">The framework traditionally separates the roles of advising on investments and executing trades to ensure advice is impartial and not influenced by transaction commissions.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Project Artha's Proposed Solution (Future State)</h3>
+                     <div class="space-y-4">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h4 class="font-bold">1. A Tech-Enabled "Micro-CIS" Framework</h4>
+                            <p class="text-sm text-gray-700">We propose a new regulatory category for ALPs (Advisor-Led Pools) where technology provides oversight. Automated compliance checks, transparent dashboards, and real-time monitoring can fulfill the investor protection spirit of CIS rules at a fraction of the cost.</p>
+                        </div>
+                         <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h4 class="font-bold">2. Transparent, Pre-Agreed Performance Fees</h4>
+                            <p class="text-sm text-gray-700">The conflict of interest is mitigated when performance fees are calculated by an impartial platform, agreed upon by the investor beforehand with full disclosure, and are based on net profits. This aligns advisor and investor interests perfectly.</p>
+                        </div>
+                         <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h4 class="font-bold">3. Platform as a Fiduciary Executor</h4>
+                            <p class="text-sm text-gray-700">In this model, the advisor's role remains purely advisory. The platform acts as the execution agent, operating on the pre-authorized instructions of the investor who joins the pool. This maintains the principle of separation, with technology ensuring the advisor cannot deviate from the pool's stated strategy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="risk-mitigation" class="section-card p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Risk Mitigation: AI-Powered Fraud Detection</h2>
+            <p class="text-gray-600 mb-8">A key project risk is the potential for platform misuse, including market manipulation or collusion. Our primary mitigation strategy is an AI-powered monitoring system. This system establishes a baseline of normal trading behavior for each advisor and flags significant deviations in real-time. The chart below visualizes a simulated detection event.</p>
+            <div class="grid md:grid-cols-3 gap-8 items-center">
+                <div class="md:col-span-2">
+                     <div class="flex justify-center space-x-4 mb-6">
+                        <button id="showNormal" class="btn-primary py-2 px-6 rounded-lg font-medium">Show Normal Pattern</button>
+                        <button id="showFraud" class="btn-secondary py-2 px-6 rounded-lg font-medium">Show Anomalous Pattern</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="fraudChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Risk Register</h3>
+                    <div class="space-y-4">
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <h4 class="font-semibold">Risk: Market Manipulation</h4>
+                            <p class="text-sm text-gray-600">Advisor rapidly buying/selling illiquid stock to inflate its price.</p>
+                            <p class="text-sm font-bold text-red-800">Mitigation: Volume & velocity spike detection.</p>
+                        </div>
+                         <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <h4 class="font-semibold">Risk: Front-Running</h4>
+                            <p class="text-sm text-gray-600">Advisor makes personal trades before executing a large pool trade.</p>
+                            <p class="text-sm font-bold text-yellow-800">Mitigation: Cross-account pattern analysis.</p>
+                        </div>
+                         <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <h4 class="font-semibold">Risk: Collusion</h4>
+                            <p class="text-sm text-gray-600">Multiple pools coordinating trades to influence the market.</p>
+                             <p class="text-sm font-bold text-blue-800">Mitigation: Inter-pool correlation monitoring.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="project-roadmap" class="section-card p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Project Roadmap & Success Metrics (KPIs)</h2>
+            <p class="text-gray-600 mb-8">Following the initial launch, the project will transition into an iterative development cycle focused on growth and feature enhancement. Success will be measured against a clear set of Key Performance Indicators (KPIs) tracked on a monthly and quarterly basis.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Post-Launch Roadmap</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-50 rounded-lg border">
+                           <p class="text-sm font-semibold text-blue-600">Q1 Post-Launch</p>
+                           <h4 class="font-bold">Advanced Analytics Dashboard</h4>
+                           <p class="text-sm text-gray-600">Launch a comprehensive dashboard for advisors with portfolio attribution analysis and performance metrics.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg border">
+                           <p class="text-sm font-semibold text-blue-600">Q2 Post-Launch</p>
+                           <h4 class="font-bold">Native Mobile Application</h4>
+                           <p class="text-sm text-gray-600">Develop and release dedicated iOS and Android apps for an improved mobile user experience.</p>
+                        </div>
+                         <div class="p-4 bg-gray-50 rounded-lg border">
+                           <p class="text-sm font-semibold text-blue-600">Q4 Post-Launch</p>
+                           <h4 class="font-bold">Integration with Thematic Baskets</h4>
+                           <p class="text-sm text-gray-600">Allow advisors to create pools based on pre-defined thematic investment baskets (e.g., ESG, Tech, EV).</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Key Performance Indicators</h3>
+                    <ul class="list-disc list-inside space-y-3 text-gray-700 bg-green-50 p-4 rounded-lg border border-green-200">
+                        <li><span class="font-semibold">User Growth:</span> Monthly active investors & onboarded advisors.</li>
+                        <li><span class="font-semibold">Financial:</span> Total Assets Under Management (AUM) in pools.</li>
+                        <li><span class="font-semibold">Engagement:</span> Average investment amount per user.</li>
+                        <li><span class="font-semibold">Platform Health:</span> System uptime and transaction processing speed.</li>
+                        <li><span class="font-semibold">Risk Management:</span> False positive rate of the fraud detection engine.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-30% 0px -70% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            const actorDetails = {
+                advisor: {
+                    name: "Stakeholder: SEBI Advisor",
+                    description: "Role: Primary user responsible for creating and managing investment pools. Project Requirements: An intuitive dashboard for portfolio management, transparent fee reporting, and tools for communicating strategy to investors. They are critical for platform adoption."
+                },
+                platform: {
+                    name: "Stakeholder: Trading Platform (Project Team)",
+                    description: "Role: The project execution team responsible for building, maintaining, and securing the platform. Project Requirements: Deliver all features outlined in the roadmap, ensure 99.9% uptime, and provide technical support to all user groups. Responsible for regulatory reporting."
+                },
+                investor: {
+                    name: "Stakeholder: Retail Investor",
+                    description: "Role: The target end-user who provides the capital for the investment pools. Project Requirements: A simple and transparent process for discovering and joining pools, clear presentation of risks and potential returns, and real-time performance tracking."
+                },
+                regulator: {
+                    name: "Stakeholder: SEBI (Compliance Authority)",
+                    description: "Role: The external regulatory body that governs the project's operational framework. Project Requirements: The platform must provide robust audit trails, adhere to all KYC/AML norms, and ensure all financial calculations and disclosures are compliant with current Indian law."
+                }
+            };
+
+            const actorNodes = document.querySelectorAll('.actor-node');
+            const actorNameEl = document.getElementById('actor-name');
+            const actorDescriptionEl = document.getElementById('actor-description');
+
+            actorNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    actorNodes.forEach(n => n.classList.remove('active'));
+                    node.classList.add('active');
+                    const actorId = node.id.split('-')[1];
+                    actorNameEl.textContent = actorDetails[actorId].name;
+                    actorDescriptionEl.textContent = actorDetails[actorId].description;
+                });
+            });
+            
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const arrow = header.querySelector('span');
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        arrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                         document.querySelectorAll('.accordion-header span').forEach(a => a.style.transform = 'rotate(0deg)');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            const investmentSlider = document.getElementById('initialInvestment');
+            const profitSlider = document.getElementById('grossProfit');
+            const investmentValue = document.getElementById('investmentValue');
+            const profitValue = document.getElementById('profitValue');
+            
+            const resultGrossProfit = document.getElementById('resultGrossProfit');
+            const resultAdvisorShare = document.getElementById('resultAdvisorShare');
+            const resultPlatformFee = document.getElementById('resultPlatformFee');
+            const resultTax = document.getElementById('resultTax');
+            const resultNetProfit = document.getElementById('resultNetProfit');
+            const resultTotalReturn = document.getElementById('resultTotalReturn');
+
+            function calculateProfit() {
+                const investment = parseFloat(investmentSlider.value);
+                const profitPercent = parseFloat(profitSlider.value) / 100;
+
+                investmentValue.textContent = investment.toLocaleString('en-IN');
+                profitValue.textContent = profitSlider.value;
+
+                const grossProfit = investment * profitPercent;
+                const advisorShare = grossProfit * 0.20;
+                const platformFee = grossProfit * 0.02;
+                const taxableProfit = grossProfit - advisorShare - platformFee;
+                const tax = taxableProfit > 0 ? taxableProfit * 0.15 : 0;
+                const netProfit = taxableProfit - tax;
+                const totalReturn = investment + netProfit;
+                
+                resultGrossProfit.textContent = `₹${grossProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                resultAdvisorShare.textContent = `- ₹${advisorShare.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                resultPlatformFee.textContent = `- ₹${platformFee.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                resultTax.textContent = `- ₹${tax.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                resultNetProfit.textContent = `₹${netProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                resultTotalReturn.textContent = `₹${totalReturn.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            }
+
+            investmentSlider.addEventListener('input', calculateProfit);
+            profitSlider.addEventListener('input', calculateProfit);
+            calculateProfit();
+
+            const fraudChartCtx = document.getElementById('fraudChart').getContext('2d');
+            let fraudChart;
+
+            const normalData = {
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
+                datasets: [{
+                    label: 'Transaction Volume',
+                    data: [120, 150, 180, 160, 200, 210, 230, 220],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
+
+            const fraudData = {
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
+                datasets: [{
+                    label: 'Anomalous Volume',
+                    data: [50, 60, 40, 800, 50, 70, 90, 1200],
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: (context) => {
+                       const index = context.dataIndex;
+                       const value = context.dataset.data[index];
+                       return value > 500 ? '#dc3545' : '#f8d7da';
+                    },
+                    pointRadius: (context) => {
+                       const index = context.dataIndex;
+                       const value = context.dataset.data[index];
+                       return value > 500 ? 6 : 3;
+                    }
+                }]
+            };
+            
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false },
+                    title: { display: true, text: 'Advisor Pool Transaction Volume Analysis' }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Time (Weeks)' } },
+                    y: { title: { display: true, text: 'Transaction Count' }, beginAtZero: true }
+                }
+            };
+
+            function createChart(data) {
+                if (fraudChart) { fraudChart.destroy(); }
+                fraudChart = new Chart(fraudChartCtx, { type: 'line', data: data, options: chartOptions });
+            }
+
+            document.getElementById('showNormal').addEventListener('click', () => createChart(normalData));
+            document.getElementById('showFraud').addEventListener('click', () => createChart(fraudData));
+            createChart(normalData);
+        });
+    </script>
+</body>
+</html>
